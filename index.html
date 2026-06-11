@@ -397,20 +397,57 @@ function renderSubstitution() {
 function findFreeFaculty() {
     const day = document.getElementById('subDay').value;
     const time = document.getElementById('subTime').value;
+    const deptFilter = document.getElementById('deptFilter').value; // Get current dept filter
+    const requester = data.faculty[currentIdx]; // The faculty who needs substitution
+
+    // 1. Find all faculty who are BUSY in this slot
     const busy = data.faculty.filter(f => f.schedule.some(s => s.day === day && s.time === time));
-    const free = data.faculty.filter(f =>!busy.find(b => b.name === f.name));
-    document.getElementById('subResults').innerHTML = `
-        <h4 style="margin-bottom:12px">Available Faculty (${free.length})</h4>
-        ${free.map(f => `
-            <div style="background:var(--bg-secondary);padding:14px;margin-bottom:8px;border-radius:8px;display:flex;justify-content:space-between;align-items:center">
-                <div>
-                    <strong>${f.name}</strong><br>
-                    <small style="color:var(--text-secondary)">${f.department} | ${f.email||'No email'}</small>
-                </div>
-                <button class="btn btn-sm" style="background:var(--success);width:auto" onclick="generateSlip('${f.name}', '${day}', '${time}')">Generate Slip</button>
+
+    // 2. Find FREE faculty: not busy + not the requester + matches dept filter if selected
+    let free = data.faculty.filter(f => {
+        const isBusy = busy.find(b => b.name === f.name);
+        const isRequester = f.name === requester.name; // Exclude self
+        const matchesDept = deptFilter? f.department === deptFilter : true; // Apply dept filter
+
+        return!isBusy &&!isRequester && matchesDept;
+    });
+
+    const originalClass = requester.schedule.find(s => s.day === day && s.time === time);
+
+    let html = `<h4 style="margin-bottom:12px">Available Faculty (${free.length}) for ${day} ${time}`;
+    if (deptFilter) html += ` - ${deptFilter} Dept`;
+    html += `</h4>`;
+
+    if (originalClass) {
+        html += `
+            <div style="background:var(--bg-secondary);padding:12px;border-radius:6px;margin-bottom:15px;border-left:3px solid var(--warning)">
+                <strong>Original Class:</strong> ${originalClass.subject} | ${originalClass.class} | ${originalClass.room || 'N/A'}<br>
+                <small style="color:var(--text-secondary)">Requested by: ${requester.name}</small>
             </div>
-        `).join('') || '<p style="color:var(--text-secondary)">No faculty available</p>'}
-    `;
+        `;
+    }
+
+    if (free.length === 0) {
+        html += '<p style="color:var(--text-secondary)">No faculty available for this slot';
+        if (deptFilter) html += ` in ${deptFilter} department`;
+        html += '</p>';
+    } else {
+        free.forEach(f => {
+            html += `
+                <div style="background:var(--bg-secondary);padding:14px;margin-bottom:8px;border-radius:8px;display:flex;justify-content:space-between;align-items:center">
+                    <div>
+                        <strong>${f.name}</strong><br>
+                        <small style="color:var(--text-secondary)">${f.department} | ${f.email || 'No email'}</small>
+                    </div>
+                    <button class="btn btn-sm" style="background:var(--success);width:auto" onclick="generateSlip('${f.name}', '${day}', '${time}')">
+                        Generate Slip
+                    </button>
+                </div>
+            `;
+        });
+    }
+
+    document.getElementById('subResults').innerHTML = html;
 }
 function generateSlip(substituteName, day, time) {
     const originalFaculty = data.faculty[currentIdx];
