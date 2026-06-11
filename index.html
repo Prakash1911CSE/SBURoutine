@@ -541,9 +541,45 @@ function delFac(idx) {
     if(currentIdx >= data.faculty.length) currentIdx = Math.max(0, data.faculty.length - 1);
     loadDropdowns();
     renderView();
-    showToast('Faculty deleted successfully');
+    showToast('Deleted! Click Export JSON to download updated file', 'success'); // <-- ADDED THIS LINE
 }
+function saveFaculty() {
+    const name = document.getElementById('name').value.trim();
+    const dept = document.getElementById('dept').value.trim();
+    if(!name ||!dept) return showToast('Name and Department required', 'error');
 
+    const schedule = [];
+    document.querySelectorAll('.sch-row').forEach(row => {
+        const sub = row.querySelector('.s-sub').value.trim();
+        const cls = row.querySelector('.s-class').value.trim();
+        if(sub && cls) {
+            schedule.push({
+                day: row.querySelector('.s-day').value,
+                time: row.querySelector('.s-time').value,
+                subject: sub,
+                class: cls,
+                type: row.querySelector('.s-type').value,
+                room: row.querySelector('.s-room').value.trim()
+            });
+        }
+    });
+
+    const facData = {
+        name, department: dept,
+        email: document.getElementById('email').value.trim(),
+        employee_id: document.getElementById('empid').value.trim(),
+        schedule
+    };
+
+    if(editIdx >= 0) data.faculty[editIdx] = facData;
+    else data.faculty.push(facData);
+
+    localStorage.setItem('sbuData', JSON.stringify(data));
+    loadDropdowns();
+    renderView();
+    closeModal();
+    showToast('Saved! Click Export JSON to download updated file', 'success'); // <-- ADDED THIS LINE
+}
 function closeModal() {
     document.getElementById('modal').classList.remove('show');
 }
