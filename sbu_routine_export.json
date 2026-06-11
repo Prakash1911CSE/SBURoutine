@@ -1,0 +1,238 @@
+{
+  "faculty": [
+    {
+      "name": "Dr. Prakash Kumar",
+      "department": "CSE",
+      "employee_id": "SBU-CSE-001",
+      "email": "prakash.kumar@sbu.ac.in",
+      "phone": "+91-9876543210",
+      "schedule": [
+        {
+          "day": "Monday",
+          "time": "09:00-09:45",
+          "subject": "Computer Organization & Architecture Lab",
+          "class": "B.Tech-IV-B",
+          "type": "Lab",
+          "room": "LAB-201"
+        },
+        {
+          "day": "Monday",
+          "time": "09:50-10:35",
+          "subject": "Operating Systems",
+          "class": "B.TECH IV-A",
+          "type": "Theory",
+          "room": "CR-105"
+        },
+        {
+          "day": "Monday",
+          "time": "01:10-01:55",
+          "subject": "Data Structures",
+          "class": "BCA II-E",
+          "type": "Theory",
+          "room": "CR-301"
+        },
+        {
+          "day": "Monday",
+          "time": "02:00-02:45",
+          "subject": "Computer System Architecture",
+          "class": "BCA II-B",
+          "type": "Core",
+          "room": "CR-202"
+        },
+        {
+          "day": "Monday",
+          "time": "03:40-04:25",
+          "subject": "Computer System Architecture",
+          "class": "BCA II E",
+          "type": "Core",
+          "room": "CR-301"
+        },
+        {
+          "day": "Tuesday",
+          "time": "09:00-09:45",
+          "subject": "Computer Organization & Architecture",
+          "class": "B.TECH IV-B",
+          "type": "Theory",
+          "room": "CR-105"
+        },
+        {
+          "day": "Tuesday",
+          "time": "09:50-10:35",
+          "subject": "Operating Systems",
+          "class": "B.TECH IV-A",
+          "type": "Theory",
+          "room": "CR-105"
+        },
+        {
+          "day": "Tuesday",
+          "time": "01:10-01:55",
+          "subject": "Data Structures Lab",
+          "class": "BCA-II-E",
+          "type": "Lab",
+          "room": "LAB-301"
+        },
+        {
+          "day": "Tuesday",
+          "time": "02:50-03:35",
+          "subject": "Computer System Architecture",
+          "class": "BCA II-B",
+          "type": "Core",
+          "room": "CR-202"
+        },
+        {
+          "day": "Wednesday",
+          "time": "09:50-10:35",
+          "subject": "Operating Systems",
+          "class": "B.TECH IV-A",
+          "type": "Theory",
+          "room": "CR-105"
+        },
+        {
+          "day": "Wednesday",
+          "time": "02:50-03:35",
+          "subject": "Data Structures Lab",
+          "class": "BCA II-E",
+          "type": "Lab",
+          "room": "LAB-301"
+        },
+        {
+          "day": "Wednesday",
+          "time": "03:40-04:25",
+          "subject": "Computer System Architecture",
+          "class": "BCA II E",
+          "type": "Core",
+          "room": "CR-301"
+        },
+        {
+          "day": "Thursday",
+          "time": "09:50-10:35",
+          "subject": "Computer Organization & Architecture",
+          "class": "B TECH IV-B",
+          "type": "Theory",
+          "room": "CR-105"
+        },
+        {
+          "day": "Thursday",
+          "time": "10:40-11:25",
+          "subject": "Operating Systems Lab",
+          "class": "B.Tech-IV-A",
+          "type": "Lab",
+          "room": "LAB-201"
+        },
+        {
+          "day": "Thursday",
+          "time": "02:00-02:45",
+          "subject": "Computer System Architecture",
+          "class": "BCA II E",
+          "type": "Core",
+          "room": "CR-301"
+        },
+        {
+          "day": "Thursday",
+          "time": "02:50-03:35",
+          "subject": "Data Structures Lab",
+          "class": "BCA II-E",
+          "type": "Lab",
+          "room": "LAB-301"
+        },
+        {
+          "day": "Friday",
+          "time": "09:00-09:45",
+          "subject": "Computer Organization & Architecture",
+          "class": "B TECH IV-B",
+          "type": "Theory",
+          "room": "CR-105"
+        },
+        {
+          "day": "Friday",
+          "time": "02:50-03:35",
+          "subject": "Data Structures Lab",
+          "class": "BCA II-E",
+          "type": "Lab",
+          "room": "LAB-301"
+        },
+        {
+          "day": "Friday",
+          "time": "03:40-04:25",
+          "subject": "Computer System Architecture",
+          "class": "BCA II-B",
+          "type": "Core",
+          "room": "CR-202"
+        }
+      ]
+    },
+    {
+      "name": "Dr. Rohit Kumar Yadav",
+      "department": "CSE",
+      "email": "anjali.sharma@sbu.ac.in",
+      "employee_id": "SBU-CSE-002",
+      "schedule": [
+        {
+          "day": "Monday",
+          "time": "09:50-10:35",
+          "subject": "Database Management Systems",
+          "class": "BCA III-A",
+          "type": "Theory",
+          "room": "CR-203"
+        },
+        {
+          "day": "Monday",
+          "time": "10:40-11:25",
+          "subject": "DBMS Lab",
+          "class": "BCA III-A",
+          "type": "Lab",
+          "room": "LAB-302"
+        },
+        {
+          "day": "Tuesday",
+          "time": "09:00-09:45",
+          "subject": "Computer Networks",
+          "class": "B.Tech-IV-A",
+          "type": "Theory",
+          "room": "CR-106"
+        }
+      ]
+    },
+    {
+      "name": "Dr. Vikash",
+      "department": "Maths",
+      "email": "vikash.kumar@sbu.ac.in",
+      "employee_id": "SBU-326",
+      "schedule": [
+        {
+          "day": "Monday",
+          "time": "09:00-09:45",
+          "subject": "Maths-I",
+          "class": "BCA-IA",
+          "type": "Theory",
+          "room": "A2-205"
+        },
+        {
+          "day": "Tuesday",
+          "time": "11:30-12:15",
+          "subject": "Maths-I",
+          "class": "BCA-IA",
+          "type": "Theory",
+          "room": "A2-205"
+        }
+      ]
+    }
+  ],
+  "time_slots": [
+    "09:00-09:45",
+    "09:50-10:35",
+    "10:40-11:25",
+    "11:30-12:15",
+    "12:01-01:05",
+    "01:10-01:55",
+    "02:00-02:45",
+    "02:50-03:35",
+    "03:40-04:25"
+  ],
+  "breaks": [
+    {
+      "name": "LUNCH BREAK",
+      "time": "12:01-01:05"
+    }
+  ]
+}
