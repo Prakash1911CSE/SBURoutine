@@ -179,10 +179,46 @@
         document.getElementById('userCount').textContent = count;
     });
 
-    function init() {
-        updateTime();
-        setInterval(updateTime, 1000);
-    }
+ function init() {
+    // Firebase listener - this runs every time data changes OR on first load
+    routineRef.on('value', (snapshot) => {
+        const cloudData = snapshot.val();
+        if (cloudData) {
+            data = cloudData;
+            if (!data.substitution_logs) data.substitution_logs = [];
+            if (!data.time_slots) data.time_slots = ["9:00-9:45", "9:45-10:30", "10:30-11:15", "11:15-12:00", "12:00-12:45", "12:45-1:30", "1:30-2:15", "2:15-3:00", "3:00-3:45", "3:45-4:30"];
+            
+            // Only run these AFTER data loads
+            loadDropdowns();
+            renderView();
+            checkSubstitutionReminders();
+            
+            if (isInitialLoad) {
+                isInitialLoad = false;
+                showToast('Connected to cloud', 'success');
+            }
+        } else {
+            // Database is empty - first time setup
+            data = {
+                faculty: [],
+                time_slots: ["9:00-9:45", "9:45-10:30", "10:30-11:15", "11:15-12:00", "12:00-12:45", "12:45-1:30", "1:30-2:15", "2:15-3:00", "3:00-3:45", "3:45-4:30"],
+                substitution_logs: []
+            };
+            loadDropdowns();
+            renderView();
+        }
+    });
+
+    // Presence tracking
+    const myPresenceRef = presenceRef.push();
+    myPresenceRef.set(true);
+    myPresenceRef.onDisconnect().remove();
+    
+    presenceRef.on('value', (snapshot) => {
+        const count = snapshot.numChildren();
+        document.getElementById('onlineCount').textContent = `${count} online`;
+    });
+}
 
     function updateTime() {
         const el = document.getElementById('dateTime');
@@ -652,6 +688,10 @@ function showToast(msg, type) {
 
 // Start the app
         function checkSubstitutionReminders() {
+            if (!data.faculty.length) {
+        document.getElementById('reminderBanner').classList.add('hidden');
+        return;
+    }
     if (!data.faculty.length ||!data.substitution_logs) return;
 
     const currentFaculty = data.faculty[currentIdx];
