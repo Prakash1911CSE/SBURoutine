@@ -195,76 +195,63 @@
     </div>
 
 <script>
-let data = {
-    faculty: [
-        {
-            name: "Dr. Prakash Kumar",
-            department: "CSE",
-            employee_id: "SBU-CSE-001",
-            email: "prakash.kumar@sbu.ac.in",
-            phone: "+91-9876543210",
-            schedule: [
-                {day:"Monday",time:"09:00-09:45",subject:"Computer Organization & Architecture Lab",class:"B.Tech-IV-B",type:"Lab",room:"LAB-201"},
-                {day:"Monday",time:"09:50-10:35",subject:"Operating Systems",class:"B.TECH IV-A",type:"Theory",room:"CR-105"},
-                {day:"Monday",time:"01:10-01:55",subject:"Data Structures",class:"BCA II-E",type:"Theory",room:"CR-301"},
-                {day:"Monday",time:"02:00-02:45",subject:"Computer System Architecture",class:"BCA II-B",type:"Core",room:"CR-202"},
-                {day:"Monday",time:"03:40-04:25",subject:"Computer System Architecture",class:"BCA II E",type:"Core",room:"CR-301"},
-                {day:"Tuesday",time:"09:00-09:45",subject:"Computer Organization & Architecture",class:"B.TECH IV-B",type:"Theory",room:"CR-105"},
-                {day:"Tuesday",time:"09:50-10:35",subject:"Operating Systems",class:"B.TECH IV-A",type:"Theory",room:"CR-105"},
-                {day:"Tuesday",time:"01:10-01:55",subject:"Data Structures Lab",class:"BCA-II-E",type:"Lab",room:"LAB-301"},
-                {day:"Tuesday",time:"02:50-03:35",subject:"Computer System Architecture",class:"BCA II-B",type:"Core",room:"CR-202"},
-                {day:"Wednesday",time:"09:50-10:35",subject:"Operating Systems",class:"B.TECH IV-A",type:"Theory",room:"CR-105"},
-                {day:"Wednesday",time:"02:50-03:35",subject:"Data Structures Lab",class:"BCA II-E",type:"Lab",room:"LAB-301"},
-                {day:"Wednesday",time:"03:40-04:25",subject:"Computer System Architecture",class:"BCA II E",type:"Core",room:"CR-301"},
-                {day:"Thursday",time:"09:50-10:35",subject:"Computer Organization & Architecture",class:"B TECH IV-B",type:"Theory",room:"CR-105"},
-                {day:"Thursday",time:"10:40-11:25",subject:"Operating Systems Lab",class:"B.Tech-IV-A",type:"Lab",room:"LAB-201"},
-                {day:"Thursday",time:"02:00-02:45",subject:"Computer System Architecture",class:"BCA II E",type:"Core",room:"CR-301"},
-                {day:"Thursday",time:"02:50-03:35",subject:"Data Structures Lab",class:"BCA II-E",type:"Lab",room:"LAB-301"},
-                {day:"Friday",time:"09:00-09:45",subject:"Computer Organization & Architecture",class:"B TECH IV-B",type:"Theory",room:"CR-105"},
-                {day:"Friday",time:"02:50-03:35",subject:"Data Structures Lab",class:"BCA II-E",type:"Lab",room:"LAB-301"},
-                {day:"Friday",time:"03:40-04:25",subject:"Computer System Architecture",class:"BCA II-B",type:"Core",room:"CR-202"}
-            ]
-        },
-        {
-            name: "Dr. Anjali Sharma",
-            department: "CSE",
-            employee_id: "SBU-CSE-002",
-            email: "anjali.sharma@sbu.ac.in",
-            schedule: [
-                {day:"Monday",time:"09:50-10:35",subject:"Database Management Systems",class:"BCA III-A",type:"Theory",room:"CR-203"},
-                {day:"Monday",time:"10:40-11:25",subject:"DBMS Lab",class:"BCA III-A",type:"Lab",room:"LAB-302"},
-                {day:"Tuesday",time:"09:00-09:45",subject:"Computer Networks",class:"B.Tech-IV-A",type:"Theory",room:"CR-106"}
-            ]
-        }
-    ],
-    time_slots: ["09:00-09:45","09:50-10:35","10:40-11:25","11:30-12:15","12:01-01:05","01:10-01:55","02:00-02:45","02:50-03:35","03:40-04:25"],
-    breaks: [{name:"LUNCH BREAK",time:"12:01-01:05"}]
-};
-
-let currentIdx = 0;
+let data = { faculty: [], time_slots: [], substitution_logs: [] };
+let currentIdx = 0, editIdx = -1;
 let currentView = 'dashboard';
-let editIdx = -1;
 const days = ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
 
-function init() {
-    const saved = localStorage.getItem('sbuData');
-    if(saved) {
-        try { data = JSON.parse(saved); } catch(e) {}
+// === GITHUB JSON URL - FIXED WITH HTTPS ===
+const GITHUB_JSON_URL = 'https://raw.githubusercontent.com/Prakash1911CSE/SBURoutine/refs/heads/main/sbu_routine_export.json';
+
+// Load data from GitHub on startup
+async function init() {
+    try {
+        showToast('Loading routine from server...');
+        const response = await fetch(GITHUB_JSON_URL + '?t=' + Date.now());
+        if (!response.ok) throw new Error('Failed to fetch JSON');
+        const cloudData = await response.json();
+        data = cloudData;
+        if (!data.substitution_logs) data.substitution_logs = [];
+        localStorage.setItem('sbuData', JSON.stringify(data));
+        loadDropdowns();
+        renderView();
+        updateTime();
+        setInterval(updateTime, 1000);
+        showToast('Routine loaded successfully!', 'success');
+    } catch (err) {
+        console.error('GitHub load failed:', err);
+        showToast('Could not load from server, using local data', 'error');
+        const local = localStorage.getItem('sbuData');
+        if (local) {
+            data = JSON.parse(local);
+            if (!data.substitution_logs) data.substitution_logs = [];
+        }
+        loadDropdowns();
+        renderView();
+        updateTime();
+        setInterval(updateTime, 1000);
     }
-    currentIdx = 0;
-    loadDropdowns();
-    renderView();
-    updateTime();
-    setInterval(updateTime, 1000);
+}
+
+function updateTime() {
+    const el = document.getElementById('dateTime');
+    if (el) {
+        el.textContent = new Date().toLocaleString('en-IN', {
+            weekday: 'long', year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
+        });
+    }
 }
 
 function loadDropdowns() {
     const sel = document.getElementById('facultySelect');
-    sel.innerHTML = data.faculty.map((f,i) => `<option value="${i}" ${i===currentIdx?'selected':''}>${f.name}</option>`).join('');
-
+    if (sel) {
+        sel.innerHTML = data.faculty.map((f,i) => `<option value="${i}" ${i===currentIdx?'selected':''}>${f.name}</option>`).join('');
+    }
     const depts = [...new Set(data.faculty.map(f => f.department))];
     const deptSel = document.getElementById('deptFilter');
-    deptSel.innerHTML = '<option value="">All Departments</option>' + depts.map(d => `<option value="${d}">${d}</option>`).join('');
+    if (deptSel) {
+        deptSel.innerHTML = '<option value="">All Departments</option>' + depts.map(d => `<option value="${d}">${d}</option>`).join('');
+    }
 }
 
 function changeFaculty() {
@@ -306,7 +293,6 @@ function renderDashboard() {
         return;
     }
     const f = data.faculty[currentIdx];
-    const cols = data.time_slots.length + 1;
     let html = `
         <div class="page-header">
             <h2>Weekly Timetable</h2>
@@ -398,32 +384,20 @@ function findFreeFaculty() {
     const day = document.getElementById('subDay').value;
     const time = document.getElementById('subTime').value;
     const deptFilter = document.getElementById('deptFilter').value;
-    const facultySelect = document.getElementById('facultySelect'); // Check your ID here
+    const requester = data.faculty[currentIdx];
 
-    if (!facultySelect) {
-        console.error('facultySelect dropdown not found');
-        return;
-    }
-
-    const requesterIdx = parseInt(facultySelect.value);
-    const requester = data.faculty[requesterIdx];
-
-    // Get all faculty who have a class in this exact day+time slot
     const busyFaculty = data.faculty.filter(f =>
         f.schedule.some(s => s.day === day && s.time === time)
     );
 
-    // Filter criteria: not busy, not the requester, matches department if selected
     const availableFaculty = data.faculty.filter(f => {
         const isBusy = busyFaculty.some(b => b.name === f.name);
         const isRequester = f.name === requester.name;
         const matchesDepartment = deptFilter? f.department === deptFilter : true;
-
         return!isBusy &&!isRequester && matchesDepartment;
     });
 
     const originalClass = requester.schedule.find(s => s.day === day && s.time === time);
-
     let html = `<h4 style="margin-bottom:12px">Available Faculty (${availableFaculty.length}) for ${day} ${time}`;
     if (deptFilter) html += ` - ${deptFilter} Dept`;
     html += `</h4>`;
@@ -462,79 +436,82 @@ function findFreeFaculty() {
             `;
         });
     }
-
     document.getElementById('subResults').innerHTML = html;
 }
+
 function generateSlip(substituteName, day, time) {
     const originalFaculty = data.faculty[currentIdx];
     const classDetail = originalFaculty.schedule.find(s => s.day === day && s.time === time);
+    if (!classDetail) return showToast('Class details not found', 'error');
 
-    if (!classDetail) {
-        showToast('Class details not found', 'error');
-        return;
+    if (!data.substitution_logs) data.substitution_logs = [];
+    const today = new Date().toLocaleDateString('en-IN');
+
+    const duplicateLog = data.substitution_logs.find(log =>
+        log.substitute === substituteName &&
+        log.day === day &&
+        log.time === time &&
+        log.date === today
+    );
+
+    if (duplicateLog) {
+        if (!confirm(`${substituteName} is already substituting for ${duplicateLog.original_faculty} at ${day} ${time} today.\n\nGenerate slip anyway?`)) {
+            return;
+        }
     }
 
-    const today = new Date().toLocaleDateString('en-IN');
+    const substituteFac = data.faculty.find(f => f.name === substituteName);
+    const hasOwnClass = substituteFac.schedule.some(s => s.day === day && s.time === time);
+    if (hasOwnClass) {
+        const ownClass = substituteFac.schedule.find(s => s.day === day && s.time === time);
+        if (!confirm(`WARNING: ${substituteName} has their own class at ${day} ${time}\n${ownClass.subject} - ${ownClass.class}\n\nContinue anyway?`)) {
+            return;
+        }
+    }
+
+    const logEntry = {
+        id: Date.now(),
+        date: today,
+        timestamp: new Date().toISOString(),
+        original_faculty: originalFaculty.name,
+        substitute: substituteName,
+        day: day,
+        time: time,
+        subject: classDetail.subject,
+        class: classDetail.class,
+        room: classDetail.room || 'N/A'
+    };
+
+    data.substitution_logs.push(logEntry);
+    localStorage.setItem('sbuData', JSON.stringify(data));
 
     const slipHTML = `
         <div style="font-family:Arial,sans-serif;color:#000;background:#fff;padding:30px;max-width:700px;margin:0 auto">
             <h2 style="text-align:center;margin:0 0 5px 0;font-size:22px">SUBSTITUTION SLIP</h2>
             <p style="text-align:center;margin:0 0 20px 0;font-size:13px">Sarala Birla University, Ranchi</p>
-            <p style="text-align:right;font-size:11px;margin-bottom:15px">Date: ${today}</p>
-
+            <p style="text-align:right;font-size:11px;margin-bottom:15px">Date: ${today} | Log ID: ${logEntry.id}</p>
             <table style="width:100%;border-collapse:collapse;font-size:14px">
-                <tr>
-                    <td style="border:1px solid #000;padding:10px;font-weight:bold;width:35%;background:#f0f0f0">Original Faculty</td>
-                    <td style="border:1px solid #000;padding:10px">${originalFaculty.name} (${originalFaculty.employee_id||'N/A'})</td>
-                </tr>
-                <tr>
-                    <td style="border:1px solid #000;padding:10px;font-weight:bold;background:#f0f0f0">Substitute Faculty</td>
-                    <td style="border:1px solid #000;padding:10px"><strong>${substituteName}</strong></td>
-                </tr>
-                <tr>
-                    <td style="border:1px solid #000;padding:10px;font-weight:bold;background:#f0f0f0">Department</td>
-                    <td style="border:1px solid #000;padding:10px">${originalFaculty.department}</td>
-                </tr>
-                <tr>
-                    <td style="border:1px solid #000;padding:10px;font-weight:bold;background:#f0f0f0">Day & Time</td>
-                    <td style="border:1px solid #000;padding:10px">${day}, ${time}</td>
-                </tr>
-                <tr>
-                    <td style="border:1px solid #000;padding:10px;font-weight:bold;background:#f0f0f0">Subject</td>
-                    <td style="border:1px solid #000;padding:10px">${classDetail.subject}</td>
-                </tr>
-                <tr>
-                    <td style="border:1px solid #000;padding:10px;font-weight:bold;background:#f0f0f0">Class/Section</td>
-                    <td style="border:1px solid #000;padding:10px">${classDetail.class}</td>
-                </tr>
-                <tr>
-                    <td style="border:1px solid #000;padding:10px;font-weight:bold;background:#f0f0f0">Room No.</td>
-                    <td style="border:1px solid #000;padding:10px">${classDetail.room||'N/A'}</td>
-                </tr>
+                <tr><td style="border:1px solid #000;padding:10px;font-weight:bold;width:35%;background:#f0f0f0">Original Faculty</td><td style="border:1px solid #000;padding:10px">${originalFaculty.name} (${originalFaculty.employee_id||'N/A'})</td></tr>
+                <tr><td style="border:1px solid #000;padding:10px;font-weight:bold;background:#f0f0f0">Substitute Faculty</td><td style="border:1px solid #000;padding:10px"><strong>${substituteName}</strong></td></tr>
+                <tr><td style="border:1px solid #000;padding:10px;font-weight:bold;background:#f0f0f0">Department</td><td style="border:1px solid #000;padding:10px">${originalFaculty.department}</td></tr>
+                <tr><td style="border:1px solid #000;padding:10px;font-weight:bold;background:#f0f0f0">Day & Time</td><td style="border:1px solid #000;padding:10px">${day}, ${time}</td></tr>
+                <tr><td style="border:1px solid #000;padding:10px;font-weight:bold;background:#f0f0f0">Subject</td><td style="border:1px solid #000;padding:10px">${classDetail.subject}</td></tr>
+                <tr><td style="border:1px solid #000;padding:10px;font-weight:bold;background:#f0f0f0">Class/Section</td><td style="border:1px solid #000;padding:10px">${classDetail.class}</td></tr>
+                <tr><td style="border:1px solid #000;padding:10px;font-weight:bold;background:#f0f0f0">Room No.</td><td style="border:1px solid #000;padding:10px">${classDetail.room||'N/A'}</td></tr>
             </table>
-
             <div style="display:flex;justify-content:space-between;margin-top:60px;font-size:12px">
-                <div style="text-align:center;width:30%">
-                    <div style="border-top:1px solid #000;padding-top:5px">Faculty Signature</div>
-                </div>
-                <div style="text-align:center;width:30%">
-                    <div style="border-top:1px solid #000;padding-top:5px">Substitute Signature</div>
-                </div>
-                
+                <div style="text-align:center;width:30%"><div style="border-top:1px solid #000;padding-top:5px">Faculty Signature</div></div>
+                <div style="text-align:center;width:30%"><div style="border-top:1px solid #000;padding-top:5px">Substitute Signature</div></div>
             </div>
         </div>
     `;
 
     const printWindow = window.open('', '_blank');
-    printWindow.document.write(`
-        <!DOCTYPE html>
-        <html>
-        <head><title>Substitution Slip</title></head>
-        <body onload="window.print()">${slipHTML}</body>
-        </html>
-    `);
+    printWindow.document.write(`<!DOCTYPE html><html><head><title>Substitution Slip</title></head><body onload="window.print()">${slipHTML}</body></html>`);
     printWindow.document.close();
+    showToast('Substitution logged! Export JSON to share updates', 'success');
 }
+
 function renderManage() {
     let html = `
         <div class="page-header">
@@ -594,45 +571,9 @@ function delFac(idx) {
     if(currentIdx >= data.faculty.length) currentIdx = Math.max(0, data.faculty.length - 1);
     loadDropdowns();
     renderView();
-    showToast('Deleted! Click Export JSON to download updated file', 'success'); // <-- ADDED THIS LINE
+    showToast('Deleted! Click Export JSON to download updated file', 'success');
 }
-function saveFaculty() {
-    const name = document.getElementById('name').value.trim();
-    const dept = document.getElementById('dept').value.trim();
-    if(!name ||!dept) return showToast('Name and Department required', 'error');
 
-    const schedule = [];
-    document.querySelectorAll('.sch-row').forEach(row => {
-        const sub = row.querySelector('.s-sub').value.trim();
-        const cls = row.querySelector('.s-class').value.trim();
-        if(sub && cls) {
-            schedule.push({
-                day: row.querySelector('.s-day').value,
-                time: row.querySelector('.s-time').value,
-                subject: sub,
-                class: cls,
-                type: row.querySelector('.s-type').value,
-                room: row.querySelector('.s-room').value.trim()
-            });
-        }
-    });
-
-    const facData = {
-        name, department: dept,
-        email: document.getElementById('email').value.trim(),
-        employee_id: document.getElementById('empid').value.trim(),
-        schedule
-    };
-
-    if(editIdx >= 0) data.faculty[editIdx] = facData;
-    else data.faculty.push(facData);
-
-    localStorage.setItem('sbuData', JSON.stringify(data));
-    loadDropdowns();
-    renderView();
-    closeModal();
-    showToast('Saved! Click Export JSON to download updated file', 'success'); // <-- ADDED THIS LINE
-}
 function closeModal() {
     document.getElementById('modal').classList.remove('show');
 }
@@ -732,6 +673,7 @@ document.getElementById('jsonFile').addEventListener('change', function(e) {
             const json = JSON.parse(evt.target.result);
             if(!json.faculty ||!json.time_slots) throw new Error('Invalid JSON format. Must have faculty and time_slots arrays.');
             data = json;
+            if (!data.substitution_logs) data.substitution_logs = [];
             localStorage.setItem('sbuData', JSON.stringify(data));
             currentIdx = 0;
             init();
@@ -761,50 +703,5 @@ function showToast(msg, type) {
     setTimeout(() => toast.style.display = 'none', 3000);
 }
 
-function updateTime() {
-    document.getElementById('dateTime').textContent = new Date().toLocaleString('en-IN', {
-        weekday: 'long', year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
-    });
-}
-
 window.onload = init;
 </script>
-<!-- Substitution Slip Modal -->
-<div class="modal" id="slipModal">
-    <div class="modal-content" style="max-width:500px">
-        <div class="modal-header">
-            <h3>Substitution Slip</h3>
-            <i class="fa-solid fa-xmark" style="cursor:pointer;font-size:20px" onclick="closeSlipModal()"></i>
-        </div>
-        <div class="modal-body" id="slipContent"></div>
-        <div style="padding:0 20px 20px;display:flex;gap:10px">
-            <button class="btn" onclick="printSlip()"><i class="fa-solid fa-print"></i> Print</button>
-            <button class="btn btn-secondary" onclick="closeSlipModal()">Close</button>
-        </div>
-    </div>
-</div>
-
-<style>
-@media print {
-    body * { visibility: hidden; }
-    #slipContent, #slipContent * { visibility: visible; }
-    #slipContent { position: absolute; left: 0; top: 0; width: 100%; }
-    .no-print { display: none !important; }
-}
-.slip-box {
-    border: 2px solid #000;
-    padding: 20px;
-    font-family: Arial, sans-serif;
-    color: #000;
-    background: #fff;
-}
-.slip-box h2 { text-align: center; margin-bottom: 5px; font-size: 18px; }
-.slip-box .sbu { text-align: center; font-size: 12px; margin-bottom: 15px; }
-.slip-table { width: 100%; border-collapse: collapse; margin: 15px 0; }
-.slip-table td { border: 1px solid #000; padding: 8px; font-size: 13px; }
-.slip-table td:first-child { font-weight: bold; width: 35%; background: #f0f0f0; }
-.slip-sign { margin-top: 40px; display: flex; justify-content: space-between; }
-.slip-sign div { text-align: center; width: 45%; }
-.slip-sign .line { border-top: 1px solid #000; margin-top: 40px; padding-top: 5px; font-size: 12px; }
-</style>
-</body></html>
