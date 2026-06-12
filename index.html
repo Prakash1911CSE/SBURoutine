@@ -3,31 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SBU Routine Manager - LIVE</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <title>SBU Routine Manager</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
         :root {
             --bg-primary: #0f172a;
             --bg-secondary: #1e293b;
-            --bg-card: #334155;
+            --bg-tertiary: #334155;
             --accent: #3b82f6;
             --accent-hover: #2563eb;
             --success: #10b981;
-            --warning: #f59e0b;
             --danger: #ef4444;
+            --warning: #f59e0b;
             --text-primary: #f1f5f9;
             --text-secondary: #94a3b8;
-            --border: #475569;
+            --border: #334155;
         }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background: var(--bg-primary);
             color: var(--text-primary);
-            overflow-x: hidden;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
         }
-        .app-container { display: flex; height: 100vh; }
-        .sidebar {
+       .sidebar {
             width: 280px;
             background: var(--bg-secondary);
             border-right: 1px solid var(--border);
@@ -35,71 +36,63 @@
             flex-direction: column;
             overflow-y: auto;
         }
-        .header {
-            padding: 24px;
+       .sidebar-header {
+            padding: 20px;
             border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
-        .header h1 {
-            font-size: 20px;
-            margin-bottom: 4px;
+       .sidebar-header h2 {
+            font-size: 18px;
             display: flex;
             align-items: center;
             gap: 8px;
         }
-        .live-badge {
+       .live-badge {
             background: var(--danger);
             color: white;
-            font-size: 10px;
-            padding: 2px 6px;
+            padding: 2px 8px;
             border-radius: 4px;
+            font-size: 10px;
             font-weight: 600;
-            animation: pulse 2s infinite;
         }
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
-               .online-status {
+       .online-status {
+            padding: 8px 20px;
             font-size: 12px;
-            color: var(--text-secondary);
-            margin-top: 8px;
+            color: var(--success);
             display: flex;
             align-items: center;
             gap: 6px;
         }
-       .online-dot {
-            width: 8px;
-            height: 8px;
-            background: var(--success);
-            border-radius: 50%;
-            animation: pulse 2s infinite;
+       .faculty-selector {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border);
         }
-       .faculty-selector { padding: 16px; }
-       .selector-group { margin-bottom: 16px; }
-       .selector-group label {
+       .faculty-selector label {
             display: block;
-            font-size: 12px;
+            font-size: 11px;
             color: var(--text-secondary);
             margin-bottom: 6px;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
+            font-weight: 600;
         }
-        select, input {
+       .faculty-selector select {
             width: 100%;
-            padding: 10px 12px;
-            background: var(--bg-card);
+            padding: 10px;
+            background: var(--bg-tertiary);
             border: 1px solid var(--border);
             border-radius: 6px;
             color: var(--text-primary);
             font-size: 14px;
-            outline: none;
-            transition: border 0.2s;
         }
-        select:focus, input:focus { border-color: var(--accent); }
-       .nav-menu { flex: 1; padding: 16px; }
+       .nav-menu {
+            padding: 12px;
+            flex: 1;
+        }
        .nav-item {
             padding: 12px 16px;
-            margin-bottom: 4px;
+            margin: 4px 0;
             border-radius: 6px;
             cursor: pointer;
             display: flex;
@@ -108,883 +101,535 @@
             transition: all 0.2s;
             font-size: 14px;
         }
-       .nav-item:hover { background: var(--bg-card); }
-       .nav-item.active {
-            background: var(--accent);
-            color: white;
-        }
-       .nav-item i { width: 20px; text-align: center; }
-       .sidebar-footer {
-            padding: 16px;
-            border-top: 1px solid var(--border);
-        }
-       .btn {
-            width: 100%;
-            padding: 10px;
-            border: none;
-            border-radius: 6px;
-            font-size: 14px;
-            font-weight: 500;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            transition: all 0.2s;
-        }
-       .btn-primary {
-            background: var(--accent);
-            color: white;
-        }
-       .btn-primary:hover { background: var(--accent-hover); }
-                .btn-secondary {
-            background: var(--bg-card);
-            color: var(--text-primary);
-            margin-top: 8px;
-        }
-        .btn-secondary:hover { background: var(--border); }
-        .btn-danger { background: var(--danger); color: white; }
-        .btn-success { background: var(--success); color: white; }
-        .btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-        .main-content {
+       .nav-item:hover { background: var(--bg-tertiary); }
+       .nav-item.active { background: var(--accent); }
+       .main-content {
             flex: 1;
             display: flex;
             flex-direction: column;
             overflow: hidden;
         }
-        .content-header {
-            padding: 24px 32px;
+       .top-bar {
+            padding: 16px 24px;
             background: var(--bg-secondary);
             border-bottom: 1px solid var(--border);
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
-        .content-header h2 { font-size: 24px; }
-        .date-display {
-            font-size: 14px;
-            color: var(--text-secondary);
-        }
-        .content-body {
-            flex: 1;
-            overflow-y: auto;
-            padding: 32px;
-        }
-        .reminder-banner {
-            background: var(--warning);
-            color: #000;
-            padding: 12px 20px;
-            border-radius: 8px;
-            margin-bottom: 24px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 16px;
-        }
-        .reminder-banner.hidden { display: none; }
-        .reminder-text { flex: 1; font-size: 14px; }
-        .reminder-close {
-            background: none;
+       .action-buttons { display: flex; gap: 8px; }
+       .btn {
+            padding: 8px 16px;
             border: none;
-            font-size: 20px;
+            border-radius: 6px;
             cursor: pointer;
-            color: #000;
-            padding: 0 4px;
+            font-size: 13px;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s;
         }
-        .page-header {
-            margin-bottom: 24px;
+       .btn-primary { background: var(--accent); color: white; }
+       .btn-primary:hover { background: var(--accent-hover); }
+       .btn-success { background: var(--success); color: white; }
+       .btn-danger { background: var(--danger); color: white; }
+       .btn-secondary { background: var(--bg-tertiary); color: var(--text-primary); }
+       .content-area {
+            flex: 1;
+            padding: 24px;
+            overflow-y: auto;
         }
-        .page-header h3 {
-            font-size: 20px;
-            margin-bottom: 4px;
-        }
-        .page-header p {
-            color: var(--text-secondary);
-            font-size: 14px;
-        }
-        .card {
+       .card {
             background: var(--bg-secondary);
             border: 1px solid var(--border);
             border-radius: 8px;
             padding: 20px;
             margin-bottom: 16px;
         }
-                .timetable-container { overflow-x: auto; }
-        .timetable {
-            width: 100%;
-            border-collapse: collapse;
+       .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+       .stat-card {
             background: var(--bg-secondary);
-            border-radius: 8px;
-            overflow: hidden;
-        }
-        .timetable th, .timetable td {
             border: 1px solid var(--border);
-            padding: 12px;
-            text-align: center;
-            font-size: 13px;
+            border-radius: 8px;
+            padding: 20px;
         }
-        .timetable th {
-            background: var(--bg-card);
-            font-weight: 600;
-            text-transform: uppercase;
-            font-size: 11px;
-            letter-spacing: 0.5px;
-        }
-        .timetable td { min-width: 120px; }
-        .timetable .day-col {
-            background: var(--bg-card);
-            font-weight: 600;
-            text-align: left;
-            padding-left: 16px;
-        }
-        .class-cell {
-            background: var(--bg-card);
-            border-radius: 6px;
-            padding: 8px;
-            text-align: left;
-        }
-        .class-subject { font-weight: 600; margin-bottom: 4px; }
-        .class-meta {
-            font-size: 11px;
-            color: var(--text-secondary);
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            margin-top: 2px;
-        }
-        .free-cell {
-            color: var(--text-secondary);
-            font-style: italic;
+       .stat-card h3 {
             font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+            text-transform: uppercase;
         }
-        .modal-overlay {
+       .stat-card.value {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--accent);
+        }
+       .modal {
+            display: none;
             position: fixed;
             top: 0;
             left: 0;
-            right: 0;
-            bottom: 0;
+            width: 100%;
+            height: 100%;
             background: rgba(0,0,0,0.7);
-            display: none;
+            z-index: 1000;
             align-items: center;
             justify-content: center;
-            z-index: 1000;
-            padding: 20px;
         }
-        .modal-overlay.active { display: flex; }
-        .modal {
+       .modal.active { display: flex; }
+       .modal-content {
             background: var(--bg-secondary);
             border: 1px solid var(--border);
             border-radius: 12px;
-                        justify-content: space-between;
-            align-items: center;
-        }
-        .modal-header h3 { font-size: 18px; }
-        .modal-close {
-            background: none;
-            border: none;
-            color: var(--text-secondary);
-            font-size: 24px;
-            cursor: pointer;
-            padding: 0;
-            line-height: 1;
-        }
-        .modal-close:hover { color: var(--text-primary); }
-        .modal-body {
-            padding: 24px;
+            width: 90%;
+            max-width: 700px;
+            max-height: 90vh;
             overflow-y: auto;
-            flex: 1;
         }
-        .form-group { margin-bottom: 16px; }
-        .form-group label {
-            display: block;
-            font-size: 13px;
-            color: var(--text-secondary);
-            margin-bottom: 6px;
-        }
-        .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-        }
-        .schedule-list {
-            margin-top: 16px;
-        }
-        .schedule-item {
-            background: var(--bg-card);
-            padding: 12px;
-            border-radius: 6px;
-            margin-bottom: 8px;
-            display: grid;
-            grid-template-columns: repeat(6, 1fr) auto;
-            gap: 8px;
-            align-items: end;
-        }
-        .schedule-item select, .schedule-item input {
-            padding: 8px;
-            font-size: 13px;
-        }
-        .btn-remove {
-            background: var(--danger);
-            color: white;
-            border: none;
-            padding: 8px 12px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 12px;
-        }
-        .modal-footer {
-            padding: 16px 24px;
-            border-top: 1px solid var(--border);
-            display: flex;
-            gap: 12px;
-            justify-content: flex-end;
-        }
-        .modal-footer .btn { width: auto; padding: 10
-                                        display: flex;
-            align-items: center;
-            gap: 12px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-            z-index: 2000;
-            transform: translateY(100px);
-            opacity: 0;
-            transition: all 0.3s;
-            max-width: 400px;
-        }
-        .toast.show {
-            transform: translateY(0);
-            opacity: 1;
-        }
-        .toast.success { border-left: 4px solid var(--success); }
-        .toast.error { border-left: 4px solid var(--danger); }
-        .toast.warning { border-left: 4px solid var(--warning); }
-        .toast-icon { font-size: 20px; }
-        .toast.success .toast-icon { color: var(--success); }
-        .toast.error .toast-icon { color: var(--danger); }
-        .toast.warning .toast-icon { color: var(--warning); }
-        .toast-message { flex: 1; font-size: 14px; }
-        .faculty-list {
-            display: grid;
-            gap: 12px;
-        }
-        .faculty-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 16px;
+       .modal-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--border);
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
-        .faculty-info h4 {
-            font-size: 16px;
-            margin-bottom: 4px;
-        }
-        .faculty-meta {
+       .modal-body { padding: 20px; }
+       .form-group { margin-bottom: 16px; }
+       .form-group label {
+            display: block;
+            margin-bottom: 6px;
             font-size: 13px;
             color: var(--text-secondary);
-            display: flex;
-            gap: 16px;
         }
-        .faculty-actions {
-            display: flex;
-            gap: 8px;
-        }
-        .btn-icon {
-            background: var(--bg-secondary);
+       .form-group input,.form-group select {
+            width: 100%;
+            padding: 10px;
+            background: var(--bg-tertiary);
             border: 1px solid var(--border);
-            color: var(--text-primary);
-            padding: 8px 12px;
             border-radius: 6px;
-            cursor: pointer;
+            color: var(--text-primary);
             font-size: 14px;
-            transition: all 0.2s;
         }
-        .btn-icon:hover { background: var(--border); }
-        .btn-icon.danger:hover {
-            background: var(--danger);
-            border-color: var(--danger);
-        }
-        .substitution-form {
+       .schedule-row {
             display: grid;
-            gap: 16px;
+            grid-template-columns: 1fr 1fr 1.5fr 1fr 1fr 80px 40px;
+            gap: 8px;
+            margin-bottom: 8px;
+            align-items: center;
         }
-        .empty-state {
+       .schedule-row input,.schedule-row select {
+            padding: 8px;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            color: var(--text-primary);
+            font-size: 13px;
+        }
+       .toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            padding: 12px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            display: none;
+            z-index: 2000;
+        }
+       .toast.show { display: block; animation: slideIn 0.3s; }
+       .toast.success { border-left: 4px solid var(--success); }
+       .toast.danger { border-left: 4px solid var(--danger); }
+       .toast.warning { border-left: 4px solid var(--warning); }
+        @keyframes slideIn {
+            from { transform: translateX(400px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+       .empty-state {
             text-align: center;
             padding: 60px 20px;
             color: var(--text-secondary);
         }
-        .empty-state i {
+       .empty-state i {
             font-size: 48px;
-                        margin-bottom: 16px;
-            opacity: 0.3;
-        }
-        .empty-state p { font-size: 16px; }
-        @media (max-width: 768px) {
-            .app-container { flex-direction: column; }
-            .sidebar { width: 100%; height: auto; }
-            .schedule-item { grid-template-columns: 1fr; }
-        }
-    </style>
-</head>
-<body>
-    <div class="app-container">
-        <aside class="sidebar">
-            <div class="header">
-                <h1><i class="fa-solid fa-calendar-days"></i> SBU Routine Manager <span class="live-badge">LIVE</span></h1>
-                <div class="online-status">
-                    <span class="online-dot"></span>
-                    <span id="onlineCount">1 online</span>
-                </div>
-            </div>
-            
-            <div class="faculty-selector">
-                <div class="selector-group">
-                    <label>Select Faculty</label>
-                    <select id="facultySelect" onchange="changeFaculty()">
-                        <option value="">Loading...</option>
-                    </select>
-                </div>
-                <div class="selector-group">
-                    <label>Filter Department</label>
-                    <select id="deptFilter" onchange="filterDepartment()">
-                        <option value="All Departments">All Departments</option>
-                    </select>
-                </div>
-            </div>
-
-            <nav class="nav-menu">
-                <div class="nav-item active" onclick="switchPage('dashboard')">
-                    <i class="fa-solid fa-gauge"></i>
-                    <span>Dashboard</span>
-                </div>
-                <div class="nav-item" onclick="switchPage('today')">
-                    <i class="fa-solid fa-calendar-day"></i>
-                    <span>Today's Classes</span>
-                </div>
-                <div class="nav-item" onclick="switch
-                                margin-bottom: 16px;
+            margin-bottom: 16px;
             opacity: 0.5;
         }
-        .empty-state p { font-size: 14px; }
-        .hidden { display: none !important; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+        th {
+            font-size: 12px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+       .reminder-banner {
+            background: var(--warning);
+            color: #000;
+            padding: 12px 24px;
+            display: none;
+            align-items: center;
+            justify-content: space-between;
+        }
+       .reminder-banner.show { display: flex; }
+       .faculty-info h4 { margin-bottom: 8px; }
+       .faculty-meta {
+            display: flex;
+            gap: 16px;
+            font-size: 13px;
+            color: var(--text-secondary);
+            flex-wrap: wrap;
+        }
+       .faculty-meta span { display: flex; align-items: center; gap: 4px; }
     </style>
 </head>
 <body>
-    <div class="app-container">
-        <aside class="sidebar">
-            <div class="header">
-                <h1><i class="fa-solid fa-calendar-days"></i> SBU Routine Manager <span class="live-badge">LIVE</span></h1>
-                <div class="online-status">
-                    <span class="online-dot"></span>
-                    <span id="onlineCount">1 online</span>
-                </div>
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h2><i class="fa-solid fa-calendar-days"></i> SBU Routine Manager</h2>
+            <span class="live-badge">LIVE</span>
+        </div>
+        <div class="online-status">
+            <i class="fa-solid fa-circle" style="font-size: 8px;"></i> 1 online
+        </div>
+        <div class="faculty-selector">
+            <label>Select Faculty</label>
+            <select id="facultySelect" onchange="selectFaculty(this.value)">
+                <option value="">Loading...</option>
+            </select>
+        </div>
+        <div class="faculty-selector">
+            <label>Filter Department</label>
+            <select id="deptFilter" onchange="filterByDept()">
+                <option value="all">All Departments</option>
+            </select>
+        </div>
+        <div class="nav-menu">
+            <div class="nav-item active" onclick="switchTab('dashboard')">
+                <i class="fa-solid fa-gauge"></i> Dashboard
             </div>
-
-            <div class="faculty-selector">
-                <div class="selector-group">
-                    <label>Select Faculty</label>
-                    <select id="facultySelect" onchange="selectFaculty()"></select>
-                </div>
-                <div class="selector-group">
-                    <label>Filter Department</label>
-                    <select id="deptFilter" onchange="filterDepartment()">
-                        <option value="">All Departments</option>
-                    </select>
-                </div>
+            <div class="nav-item" onclick="switchTab('today')">
+                <i class="fa-solid fa-calendar-day"></i> Today's Classes
             </div>
-
-            <nav class="nav-menu">
-                <div class="nav-item active" onclick="switchPage('dashboard')">
-                    <i class="fa-solid fa-dashboard"></i> Dashboard
-                </div>
-                <div class="nav-item" onclick="switchPage('today')">
-                    <i class="fa-solid fa-calendar-day"></i> Today's Classes
-                </div>
-                <div class="nav-item" onclick="switchPage('substitution')">
-                    <i class="fa-solid fa-right-left"></i> Substitution
-                </div>
-                <div class="nav-item" onclick="switchPage('faculty')">
-                    <i class="fa-solid fa-users"></i> Manage Faculty
-                </div>
-            </nav>
-
-            <div class="sidebar-footer">
-                <button class="btn btn-primary" onclick="openAddModal()">
-                    <i class="fa-solid fa-plus"></i> Add Faculty
-                </button>
-                <button class="btn btn-secondary" onclick="exportData()">
-                    <i class="fa-solid fa-download"></i> Export Backup
-                </button>
+            <div class="nav-item" onclick="switchTab('weekly')">
+                <i class="fa-solid fa-calendar-week"></i> Weekly Schedule
             </div>
-        </aside>
-
-        <main class="main-content">
-                        <div class="content-header">
-                <h2 id="pageTitle">Dashboard</h2>
-                <div class="date-display" id="dateDisplay"></div>
+            <div class="nav-item" onclick="switchTab('substitute')">
+                <i class="fa-solid fa-people-arrows"></i> Substitution
             </div>
-
-            <div class="content-body" id="contentBody">
-                <!-- Content loads here -->
-            </div>
-        </main>
-    </div>
-
-    <!-- Add/Edit Faculty Modal -->
-    <div class="modal-overlay" id="modal">
-        <div class="modal">
-            <div class="modal-header">
-                <h3 id="modalTitle">Add Faculty</h3>
-                <button class="modal-close" onclick="closeModal()">&times;</button>
-            </div>
-            <div class="modal-body">
-                <div class="form-group">
-                    <label>Full Name *</label>
-                    <input type="text" id="name" placeholder="Dr. Prakash Kumar">
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Department *</label>
-                        <input type="text" id="dept" placeholder="CSE">
-                    </div>
-                    <div class="form-group">
-                        <label>Employee ID</label>
-                        <input type="text" id="empid" placeholder="SBU001">
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label>Email</label>
-                    <input type="email" id="email" placeholder="prakash@sbu.ac.in">
-                </div>
-                
-                <div class="form-group">
-                    <label>Weekly Schedule</label>
-                    <button class="btn btn-secondary" onclick="addScheduleItem()">
-                        <i class="fa-solid fa-plus"></i> Add Schedule Entry
-                    </button>
-                    <div class="schedule-list" id="scheduleList"></div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
-                <button class="btn btn-success" onclick="saveFaculty()" id="modal.btn">
-                    <i class="fa-solid fa-save"></i> Save
-                </button>
+            <div class="nav-item" onclick="switchTab('manage')">
+                <i class="fa-solid fa-users-gear"></i> Manage Faculty
             </div>
         </div>
     </div>
 
-    <div id="toast"></div>
+    <div class="main-content">
+        <div class="reminder-banner" id="reminderBanner">
+            <span id="reminderText"></span>
+            <button class="btn btn-secondary" onclick="closeReminder()">Dismiss</button>
+        </div>
+        <div class="top-bar">
+            <h3 id="pageTitle">Dashboard</h3>
+            <div class="action-buttons">
+                <button class="btn btn-success" onclick="openFacultyModal()">
+                    <i class="fa-solid fa-plus"></i> Add Faculty
+                </button>
+                <button class="btn btn-secondary" onclick="exportData()">
+                    <i class="fa-solid fa-download"></i> Export
+                </button>
+                <button class="btn btn-secondary" onclick="importData()">
+                    <i class="fa-solid fa-upload"></i> Import
+                </button>
+                <input type="file" id="importFile" accept=".json" style="display:none" onchange="handleImport(event)">
+            </div>
+        </div>
+        <div class="content-area" id="contentArea">
+            <div class="empty-state">
+                <i class="fa-solid fa-spinner fa-spin"></i>
+                <p>Connecting to Firebase...</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="facultyModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">Add Faculty</h3>
+                <button class="btn btn-secondary" onclick="closeFacultyModal()">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="facultyForm" onsubmit="event.preventDefault(); saveFaculty();">
+                    <div class="form-group">
+                        <label>Faculty Name *</label>
+                        <input type="text" id="facultyName" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Department *</label>
+                        <input type="text" id="facultyDept" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Employee ID</label>
+                        <input type="text" id="facultyEmpId">
+                    </div>
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" id="facultyEmail">
+                    </div>
+                    <div class="form-group">
+                        <label>Weekly Schedule</label>
+                        <div id="scheduleContainer"></div>
+                        <button type="button" class="btn btn-secondary" onclick="addScheduleRow()" style="margin-top: 8px;">
+                            <i class="fa-solid fa-plus"></i> Add Class
+                        </button>
+                    </div>
+                    <div style="display: flex; gap: 8px; justify-content: flex-end; margin-top: 20px;">
+                        <button type="button" class="btn btn-secondary" onclick="closeFacultyModal()">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Save Faculty</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
 
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-        <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
-
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     <script>
-        // TODO: Replace with your Firebase config
+        // PASTE YOUR FIREBASE CONFIG HERE
         const firebaseConfig = {
             apiKey: "YOUR_API_KEY",
-            authDomain: "YOUR_PROJECT.firebaseapp.com",
-            databaseURL: "https://YOUR_PROJECT-default-rtdb.firebaseio.com",
-            projectId: "YOUR_PROJECT",
-            storageBucket: "YOUR_PROJECT.appspot.com",
+            authDomain: "YOUR_AUTH_DOMAIN",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_STORAGE_BUCKET",
             messagingSenderId: "YOUR_SENDER_ID",
             appId: "YOUR_APP_ID"
         };
 
         firebase.initializeApp(firebaseConfig);
-        const db = firebase.database();
-        const facultyRef = db.ref('faculty');
+        const db = firebase.firestore();
 
         let faculty = [];
         let currentFacultyId = null;
-        let currentPage = 'dashboard';
+        let currentTab = 'dashboard';
         let editId = null;
 
         const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-        const periods = ['09:00-10:00', '10:00-11:00', '11:00-12:00', '12:00-13:00', '13:00-14:00', '14:00-15:00', '15:00-16:00', '16:00-17:00'];
+        const periods = ['09:00-10:00', '10:00-11:00', '11:00-12:00', '12:00-13:00', '14:00-15:00', '15:00-16:00', '16:00-17:00'];
 
-        // Initialize
-        document.addEventListener('DOMContentLoaded', () => {
-            updateDate();
-            setInterval(updateDate, 60000);
-            loadFaculty();
-            setupPresence();
-        });
+        function switchTab(tab) {
+            currentTab = tab;
+            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+            event?.target.closest('.nav-item')?.classList.add('active');
+            
+            const titles = {
+                dashboard: 'Dashboard',
+                today: "Today's Classes",
+                weekly: 'Weekly Schedule',
+                substitute: 'Substitution Manager',
+                manage: 'Manage Faculty'
+            };
+            document.getElementById('pageTitle').textContent = titles[tab];
 
-        function updateDate() {
-            const now = new Date();
-            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-            document.getElementById('dateDisplay').textContent = now.toLocaleDateString('en-US', options);
+            if (faculty.length === 0) {
+                document.getElementById('contentArea').innerHTML = `
+                    <div class="empty-state">
+                        <i class="fa-solid fa-users-slash"></i>
+                        <p>No faculty data found</p>
+                        <p style="font-size: 13px; margin-top: 8px;">Click "Add Faculty" to get started</p>
+                    </div>
+                `;
+                return;
+            }
+
+            const html = {
+                dashboard: getDashboardHTML(),
+                today: getTodayHTML(),
+                weekly: getWeeklyHTML(),
+                substitute: getSubstitutionHTML(),
+                manage: getManageHTML()
+            };
+            document.getElementById('contentArea').innerHTML = html[tab];
         }
 
-        // Firebase Realtime Listeners
-        function loadFaculty() {
-            facultyRef.on('value', (snapshot) => {
-                const data = snapshot.val();
-                faculty = data? Object.keys(data).map(id => ({ id,...data[id] })) : [];
-                updateUI();
-            });
-        }
-
-        function setupPresence() {
-            const presenceRef = db.ref('presence');
-            const userRef = presenceRef.push();
-            userRef.set(true);
-            userRef.onDisconnect().remove();
-
-            presenceRef.on('value', (snapshot) => {
-                const count = snapshot.numChildren();
-                                document.getElementById('onlineCount').textContent = `${count} online`;
-            });
-        }
-
-        function updateUI() {
-            populateFacultySelect();
-            populateDeptFilter();
-            renderPage();
+        function selectFaculty(id) {
+            currentFacultyId = id;
+            switchTab(currentTab);
             checkReminders();
         }
 
-        function populateFacultySelect() {
+        function renderFacultyList() {
             const select = document.getElementById('facultySelect');
-            select.innerHTML = '<option value="">Select Faculty</option>';
-            faculty.forEach(f => {
-                select.innerHTML += `<option value="${f.id}">${f.name} - ${f.dept}</option>`;
-            });
-            if (currentFacultyId && faculty.find(f => f.id === currentFacultyId)) {
-                select.value = currentFacultyId;
-            } else if (faculty.length > 0) {
-                currentFacultyId = faculty[0].id;
-                select.value = currentFacultyId;
-            }
-        }
-
-        function populateDeptFilter() {
-            const select = document.getElementById('deptFilter');
+            const deptFilter = document.getElementById('deptFilter').value;
+            
+            const filtered = deptFilter === 'all'? faculty : faculty.filter(f => f.dept === deptFilter);
+            
+            select.innerHTML = filtered.length === 0 
+               ? '<option value="">No faculty found</option>'
+                : filtered.map(f => `<option value="${f.id}" ${f.id === currentFacultyId? 'selected' : ''}>${f.name}</option>`).join('');
+            
             const depts = [...new Set(faculty.map(f => f.dept))];
-            select.innerHTML = '<option value="">All Departments</option>';
-            depts.forEach(d => {
-                select.innerHTML += `<option value="${d}">${d}</option>`;
-            });
+            const deptSelect = document.getElementById('deptFilter');
+            const currentDept = deptSelect.value;
+            deptSelect.innerHTML = '<option value="all">All Departments</option>' + 
+                depts.map(d => `<option value="${d}" ${d === currentDept? 'selected' : ''}>${d}</option>`).join('');
         }
 
-        function selectFaculty() {
-            currentFacultyId = document.getElementById('facultySelect').value;
-            renderPage();
+        function filterByDept() {
+            renderFacultyList();
         }
 
-        function filterDepartment() {
-            const dept = document.getElementById('deptFilter').value;
-            const select = document.getElementById('facultySelect');
-            select.innerHTML = '<option value="">Select Faculty</option>';
-            const filtered = dept? faculty.filter(f => f.dept === dept) : faculty;
-            filtered.forEach(f => {
-                select.innerHTML += `<option value="${f.id}">${f.name} - ${f.dept}</option>`;
-            });
-            if (filtered.length > 0) {
-                currentFacultyId = filtered[0].id;
-                select.value = currentFacultyId;
-            } else {
-                currentFacultyId = null;
-            }
-            renderPage();
-        }
-
-        function switchPage(page) {
-            currentPage = page;
-                        document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
-            event.currentTarget.classList.add('active');
-
-            const titles = {
-                'dashboard': 'Dashboard',
-                'today': "Today's Classes",
-                'substitution': 'Substitution',
-                'faculty': 'Manage Faculty'
-            };
-            document.getElementById('pageTitle').textContent = titles[page];
-            renderPage();
-        }
-
-        function renderPage() {
-            const body = document.getElementById('contentBody');
+        function getDashboardHTML() {
             const f = faculty.find(f => f.id === currentFacultyId);
+            if (!f) return '<div class="empty-state"><i class="fa-solid fa-user-slash"></i><p>Select a faculty member</p></div>';
 
-            if (currentPage === 'dashboard') {
-                body.innerHTML = getDashboardHTML(f);
-            } else if (currentPage === 'today') {
-                body.innerHTML = getTodayHTML(f);
-            } else if (currentPage === 'substitution') {
-                body.innerHTML = getSubstitutionHTML(f);
-            } else if (currentPage === 'faculty') {
-                body.innerHTML = getFacultyHTML();
-            }
-        }
-
-        function getDashboardHTML(f) {
-            if (!f) return '<div class="empty-state"><i class="fa-solid fa-user-slash"></i><p>No faculty selected</p></div>';
-
-            let html = `
-                <div class="reminder-banner" id="reminderBanner">
-                    <div class="reminder-text" id="reminderText"></div>
-                    <button class="reminder-close" onclick="closeReminder()">&times;</button>
-                </div>
-                <div class="page-header">
-                    <h3>${f.name} - Weekly Timetable</h3>
-                    <p>${f.dept} | ${f.empid || 'No ID'} | ${f.email || 'No email'}</p>
-                </div>
-                <div class="card timetable-container">
-                    <table class="timetable">
-                        <thead>
-                            <tr>
-                                <th>Day / Period</th>
-                                ${periods.map(p => `<th>${p}</th>`).join('')}
-                            </tr>
-                        </thead>
-                        <tbody>
-            `;
-
-            days.forEach(day => {
-                html += `<tr><td class="day-col">${day}</td>`;
-                periods.forEach(period => {
-                    const schedule = f.schedules?.find(s => s.day ===                        html += `
-                            <td>
-                                <div class="class-cell">
-                                    <div class="class-subject">${schedule.subject}</div>
-                                    <div class="class-meta"><i class="fa-solid fa-building"></i> ${schedule.room}</div>
-                                    <div class="class-meta"><i class="fa-solid fa-layer-group"></i> ${schedule.batch}</div>
-                                </div>
-                            </td>
-                        `;
-                    } else {
-                        html += `<td><div class="free-cell">Free</div></td>`;
-                    }
-                });
-                html += `</tr>`;
-            });
-
-            html += `
-                        </tbody>
-                    </table>
-                </div>
-            `;
-            return html;
-        }
-
-        function getTodayHTML(f) {
-            if (!f) return '<div class="empty-state"><i class="fa-solid fa-user-slash"></i><p>No faculty selected</p></div>';
-
+            const totalClasses = f.schedules?.length || 0;
             const today = new Date().toLocaleDateString('en-US', { weekday: 'long' });
-            const todayClasses = f.schedules?.filter(s => s.day === today) || [];
+            const todayClasses = f.schedules?.filter(s => s.day === today).length || 0;
+            const subjects = [...new Set(f.schedules?.map(s => s.subject) || [])].length;
 
-            let html = `
-                <div class="page-header">
-                    <h3>Classes for ${today}</h3>
-                    <p>${todayClasses.length} class${todayClasses.length !== 1 ? 'es' : ''} scheduled</p>
-                </div>
-            `;
-
-            if (todayClasses.length === 0) {
-                html += '<div class="empty-state"><i class="fa-solid fa-mug-hot"></i><p>No classes today. Enjoy your day!</p></div>';
-            } else {
-                todayClasses.sort((a, b) => a.period.localeCompare(b.period));
-                todayClasses.forEach(c => {
-                    html += `
-                        <div class="card">
-                            <div class="faculty-info">
-                                <h4>${c.subject}</h4>
-                                <div class="faculty-meta">
-                                    <span><i class="fa-solid fa-clock"></i> ${c.period}</span>
-                                    <span><i class="fa-solid fa-building"></i> Room ${c.room}</span>
-                                    <span><i class="fa-solid fa-layer-group"></i> Batch ${c.batch}</span>
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                });
-            }
-            return html;
-        }
-
-        function getSubstitutionHTML(f) {
-            let html = `                        html += `
-                            <td>
-                                <div class="class-cell">
-                                    <div class="class-subject">${schedule.subject}</div>
-                                    <div class="class-meta">
-                                        <i class="fa-solid fa-door-open"></i> ${schedule.room}
-                                    </div>
-                                    <div class="class-meta">
-                                        <i class="fa-solid fa-users"></i> ${schedule.section} - Sem ${schedule.semester}
-                                    </div>
-                                </div>
-                            </td>
-                        `;
-                    } else {
-                        html += `<td><div class="free-cell">Free</div></td>`;
-                    }
-                });
-                html += `</tr>`;
-            });
-
-            html += `
-                        </tbody>
-                    </table>
-                </div>
-            `;
-            return html;
-        }
-
-        function getTodayHTML(f) {
-            if (!f) return '<div class="empty-state"><i class="fa-solid fa-user-slash"></i><p>No faculty selected</p></div>';
-
-            const today = new Date().toLocaleDateString('en-US', { weekday: 'long' });
-            const todaySchedules = f.schedules?.filter(s => s.day === today) || [];
-
-            let html = `
-                <div class="page-header">
-                    <h3>Classes for ${today}</h3>
-                    <p>${f.name} - ${f.dept}</p>
-                </div>
-            `;
-
-            if (todaySchedules.length === 0) {
-                html += '<div class="empty-state"><i class="fa-solid fa-mug-hot"></i><p>No classes scheduled today</p></div>';
-            } else {
-                todaySchedules.sort((a, b) => periods.indexOf(a.period) - periods.indexOf(b.period));
-                todaySchedules.forEach(s => {
-                    html += `
-                        <div class="card">
-                            <div style="display: flex; justify-content: space-between; align-items: center;">
-                                <div>
-                                    <h4>${s.subject}</h4>
-                                    <div class="faculty-meta">
-                                        <span><i class="fa-solid fa-clock"></i> ${s.period}</span>
-                                        <span><i class="fa-solid fa-door-open"></i> ${s.room}</span>
-                                        <span><i class="fa-solid fa-users"></i> ${s.section}</span>
-                                                                                <span><i class="fa-solid fa-graduation-cap"></i> Sem ${s.semester}</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                });
-            }
-            return html;
-        }
-
-        function getSubstitutionHTML(f) {
-            if (!f) return '<div class="empty-state"><i class="fa-solid fa-user-slash"></i><p>No faculty selected</p></div>';
-
-            let html = `
-                <div class="page-header">
-                    <h3>Substitution for ${f.name}</h3>
-                    <p>Mark absence and assign substitute faculty</p>
-                </div>
-                <div class="card">
-                    <div class="substitution-form">
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>Select Date</label>
-                                <input type="date" id="subDate" value="${new Date().toISOString().split('T')[0]}" onchange="loadSubClasses()">
-                            </div>
-                            <div class="form-group">
-                                <label>Select Class to Substitute</label>
-                                <select id="subClass">
-                                    <option value="">Select date first</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label>Assign to Faculty</label>
-                            <select id="subFaculty">
-                                <option value="">Select substitute faculty</option>
-                                ${faculty.filter(fac => fac.id !== f.id).map(fac => 
-                                    `<option value="${fac.id}">${fac.name} - ${fac.dept}</option>`
-                                ).join('')}
-                            </select>
-                        </div>
-                        <button class="btn btn-warning" onclick="assignSubstitution()">
-                            <i class="fa-solid fa-right-left"></i> Assign Substitution
-                        </button>
+            return `
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <h3>Total Classes/Week</h3>
+                        <div class="value">${totalClasses}</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Today's Classes</h3>
+                        <div class="value">${todayClasses}</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Subjects Taught</h3>
+                        <div class="value">${subjects}</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Department</h3>
+                        <div class="value" style="font-size: 18px;">${f.dept}</div>
                     </div>
                 </div>
-                <div id="substitutionList"></div>
-            `;
-            setTimeout(loadSubClasses, 100);
-            setTimeout(loadSubstitutionHistory, 100);
-            return html;
-        }
-
-        function loadSubClasses() {
-            const f = faculty.find(f => f.id === currentFacultyId);
-            if (!f) return;
-            
-            const date = document.getElementById('subDate').value;
-                                                    <span><i class="fa-solid fa-layer-group"></i> Sem ${s.semester}</span>
-                                    </div>
-                                </div>
-                                <button class="btn btn-warning" onclick="requestSubstitution('${f.id}', '${s.day}', '${s.period}')">
-                                    <i class="fa-solid fa-right-left"></i> Substitute
-                                </button>
-                            </div>
-                        </div>
-                    `;
-                });
-            }
-            return html;
-        }
-
-        function getSubstitutionHTML(f) {
-            let html = `
-                <div class="page-header">
-                    <h3>Substitution Management</h3>
-                    <p>Request substitutes for classes or check substitution requests</p>
-                </div>
                 <div class="card">
-                    <h4 style="margin-bottom: 16px;">Request Substitution</h4>
-                    <div class="substitution-form">
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>Select Faculty</label>
-                                <select id="subFaculty">
-                                    <option value="">Choose faculty</option>
-                                    ${faculty.map(f => `<option value="${f.id}">${f.name}</option>`).join('')}
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label>Day</label>
-                                <select id="subDay">
-                                    <option value="">Select day</option>
-                                    ${days.map(d => `<option value="${d}">${d}</option>`).join('')}
-                                </select>
-                            </div>
+                    <h3 style="margin-bottom: 16px;">Faculty Details</h3>
+                    <div class="faculty-meta">
+                        <span><i class="fa-solid fa-user"></i> ${f.name}</span>
+                        <span><i class="fa-solid fa-id-badge"></i> ${f.empid || 'N/A'}</span>
+                        <span><i class="fa-solid fa-envelope"></i> ${f.email || 'N/A'}</span>
+                    </div>
+                </div>
+            `;
+        }
+
+        function getTodayHTML() {
+            const f = faculty.find(f => f.id === currentFacultyId);
+            if (!f) return '<div class="empty-state"><i class="fa-solid fa-user-slash"></i><p>Select a faculty member</p></div>';
+
+            const today = new Date().toLocaleDateString('en-US', { weekday: 'long' });
+            const todayClasses = f.schedules?.filter(s => s.day === today).sort((a,b) => a.period.localeCompare(b.period)) || [];
+
+            if (todayClasses.length === 0) {
+                return `<div class="empty-state"><i class="fa-solid fa-calendar-xmark"></i><p>No classes scheduled for ${today}</p></div>`;
+            }
+
+            return `
+                <div class="card">
+                    <h3 style="margin-bottom: 16px;">${today}'s Schedule</h3>
+                    <table>
+                        <thead>
+                            <tr><th>Time</th><th>Subject</th><th>Room</th><th>Section</th><th>Semester</th></tr>
+                        </thead>
+                        <tbody>
+                            ${todayClasses.map(c => `
+                                <tr>
+                                    <td>${c.period}</td>
+                                    <td>${c.subject}</td>
+                                    <td>${c.room || '-'}</td>
+                                    <td>${c.section || '-'}</td>
+                                    <td>${c.semester || '-'}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+        }
+
+        function getWeeklyHTML() {
+            const f = faculty.find(f => f.id === currentFacultyId);
+            if (!f) return '<div class="empty-state"><i class="fa-solid fa-user-slash"></i><p>Select a faculty member</p></div>';
+
+            const schedule = f.schedules || [];
+            if (schedule.length === 0) {
+                return `<div class="empty-state"><i class="fa-solid fa-calendar-plus"></i><p>No schedule added yet</p></div>`;
+            }
+
+            let html = '<div class="card"><h3 style="margin-bottom: 16px;">Weekly Timetable</h3><div style="overflow-x: auto;"><table><thead><tr><th>Time</th>';
+            days.forEach(d => html += `<th>${d}</th>`);
+            html += '</tr></thead><tbody>';
+
+            periods.forEach(p => {
+                html += `<tr><td><strong>${p}</strong></td>`;
+                days.forEach(d => {
+                    const cls = schedule.find(s => s.day === d && s.period === p);
+                    html += `<td>${cls? `<div style="font-size: 12px;"><strong>${cls.subject}</strong><br>${cls.room || ''}<br><span style="color: var(--text-secondary);">${cls.section || ''}</span></div>` : '-'}</td>`;
+                });
+                html += '</tr>';
+            });
+
+            html += '</tbody></table></div></div>';
+            return html;
+        }
+
+        function getSubstitutionHTML() {
+            return `
+                <div class="card">
+                    <h3 style="margin-bottom: 16px;">Find Substitute Faculty</h3>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-bottom: 16px;">
+                        <div class="form-group">
+                            <label>Faculty on Leave</label>
+                            <select id="subFaculty" onchange="findAvailableFaculty()">
+                                <option value="">Select Faculty</option>
+                                ${faculty.map(f => `<option value="${f.id}">${f.name}</option>`).join('')}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Day</label>
+                            <select id="subDay" onchange="findAvailableFaculty()">
+                                <option value="">Select Day</option>
+                                ${days.map(d => `<option value="${d}">${d}</option>`).join('')}
+                            </select>
                         </div>
                         <div class="form-group">
                             <label>Period</label>
                             <select id="subPeriod" onchange="findAvailableFaculty()">
-                                <option value="">Select period</option>
+                                <option value="">Select Period</option>
                                 ${periods.map(p => `<option value="${p}">${p}</option>`).join('')}
                             </select>
                         </div>
-                        <div class="form-group">
-                            <label>Available Substitutes</label>
-                            <div id="availableSubs" style="padding: 12px; background: var(--bg-card); border-radius: 6px; min-height: 60px;">
-                                <p style="color: var(--text-secondary); font-size: 13px;">Select faculty, day and period to see available substitutes</p>
-                            </div>
-                        </div>
                     </div>
+                    <div id="availableSubs"></div>
                 </div>
             `;
-            return html;
         }
 
-        function getFacultyHTML() {
-            let html = `                <div class="page-header">
+        function getManageHTML() {
+            let html = `
+                <div class="page-header" style="margin-bottom: 16px;">
                     <h3>Faculty Management</h3>
-                    <p>Total ${faculty.length} faculty members</p>
+                    <p style="color: var(--text-secondary); font-size: 13px;">Total ${faculty.length} faculty members</p>
                 </div>
             `;
 
@@ -994,22 +639,24 @@
                 faculty.forEach(f => {
                     html += `
                         <div class="card">
-                            <div class="faculty-info">
-                                <h4>${f.name}</h4>
-                                <div class="faculty-meta">
-                                    <span><i class="fa-solid fa-building-columns"></i> ${f.dept}</span>
-                                    <span><i class="fa-solid fa-id-badge"></i> ${f.empid || 'N/A'}</span>
-                                    <span><i class="fa-solid fa-envelope"></i> ${f.email || 'N/A'}</span>
-                                    <span><i class="fa-solid fa-calendar-week"></i> ${f.schedules?.length || 0} classes/week</span>
+                            <div style="display: flex; justify-content: space-between; align-items: start;">
+                                <div class="faculty-info">
+                                    <h4>${f.name}</h4>
+                                    <div class="faculty-meta">
+                                        <span><i class="fa-solid fa-building-columns"></i> ${f.dept}</span>
+                                        <span><i class="fa-solid fa-id-badge"></i> ${f.empid || 'N/A'}</span>
+                                        <span><i class="fa-solid fa-envelope"></i> ${f.email || 'N/A'}</span>
+                                        <span><i class="fa-solid fa-calendar-week"></i> ${f.schedules?.length || 0} classes/week</span>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="action-buttons">
-                                <button class="btn btn-primary" onclick="editFaculty('${f.id}')">
-                                    <i class="fa-solid fa-edit"></i> Edit
-                                </button>
-                                <button class="btn btn-danger" onclick="deleteFaculty('${f.id}')">
-                                    <i class="fa-solid fa-trash"></i> Delete
-                                </button>
+                                <div class="action-buttons">
+                                    <button class="btn btn-primary" onclick="editFaculty('${f.id}')">
+                                        <i class="fa-solid fa-edit"></i> Edit
+                                    </button>
+                                    <button class="btn btn-danger" onclick="deleteFaculty('${f.id}')">
+                                        <i class="fa-solid fa-trash"></i> Delete
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     `;
@@ -1020,93 +667,31 @@
 
         function checkReminders() {
             const f = faculty.find(f => f.id === currentFacultyId);
-            if (!f || !f.schedules) return;
+            if (!f ||!f.schedules) return;
 
             const now = new Date();
             const currentDay = now.toLocaleDateString('en-US', { weekday: 'long' });
             const currentTime = now.getHours() * 60 + now.getMinutes();
 
             const nextClass = f.schedules
-                .filter(s => s.day === currentDay)
-                .map(s => {
+               .filter(s => s.day === currentDay)
+               .map(s => {
                     const [start] = s.period.split('-');
                     const [h, m] = start.split(':').map(Number);
                     return {...s, minutes: h * 60 + m };
                 })
-                .filter(s => s.minutes > currentTime)
-                .sort((a, b) => a.minutes - b.minutes)[0];
+               .filter(s => s.minutes > currentTime)
+               .sort((a, b) => a.minutes - b.minutes)[0];
 
             const banner = document.getElementById('reminderBanner');
             const text = document.getElementById('reminderText');
 
             if (nextClass && nextClass.minutes - currentTime <= 15) {
                 const minsLeft = nextClass.minutes - currentTime;
-                text.innerHTML = `<i class="fa-solid fa-bell"></i> <strong>Reminder:</strong> ${nextClass.subject} starts in ${minsLeft} minute${minsLeft !== 1 ? 's' : ''} at ${nextClass.room}`;
+                text.innerHTML = `<i class="fa-solid fa-bell"></i> <strong>Reminder:</strong> ${nextClass.subject} starts in ${minsLeft} minute${minsLeft!== 1? 's' : ''} at ${nextClass.room || 'TBA'}`;
                 banner.classList.add('show');
             } else {
                 banner.classList.remove('show');
-            }
-                       <div class="page-header">
-                    <h3>Faculty Management</h3>
-                    <p>Total ${faculty.length} faculty members</p>
-                </div>
-            `;
-
-            if (faculty.length === 0) {
-                html += '<div class="empty-state"><i class="fa-solid fa-users-slash"></i><p>No faculty added yet. Click "Add Faculty" to get started.</p></div>';
-            } else {
-                faculty.forEach(f => {
-                    const totalClasses = f.schedules?.length || 0;
-                    html += `
-                        <div class="card">
-                            <div class="faculty-info">
-                                <h4>${f.name}</h4>
-                                <div class="faculty-meta">
-                                    <span><i class="fa-solid fa-building-columns"></i> ${f.dept}</span>
-                                    <span><i class="fa-solid fa-id-badge"></i> ${f.empid || 'N/A'}</span>
-                                    <span><i class="fa-solid fa-envelope"></i> ${f.email || 'N/A'}</span>
-                                    <span><i class="fa-solid fa-chalkboard-user"></i> ${totalClasses} classes/week</span>
-                                </div>
-                            </div>
-                            <div class="action-buttons">
-                                <button class="btn btn-primary" onclick="editFaculty('${f.id}')">
-                                    <i class="fa-solid fa-pen"></i> Edit
-                                </button>
-                                <button class="btn btn-danger" onclick="deleteFaculty('${f.id}')">
-                                    <i class="fa-solid fa-trash"></i> Delete
-                                </button>
-                            </div>
-                        </div>
-                    `;
-                });
-            }
-            return html;
-        }
-
-        function checkReminders() {
-            const f = faculty.find(f => f.id === currentFacultyId);
-            if (!f || !f.schedules) return;
-
-            const now = new Date();
-            const today = now.toLocaleDateString('en-US', { weekday: 'long' });
-            const currentTime = now.getHours() * 60 + now.getMinutes();
-
-            const nextClass = f.schedules
-                .filter(s => s.day === today)
-                .map(s => {
-                    const [start] = s.period.split('-');
-                    const [h, m] = start.split(':').map(Number);
-                    return {...s, startMinutes: h * 60 + m };
-                })
-                .filter(s => s.startMinutes > currentTime)
-                .sort((a, b) => a.startMinutes - b.startMinutes)[0];
-
-            if (nextClass && nextClass.startMinutes - currentTime <= 15) {
-                const banner = document.getElementById('reminderBanner');
-                const text = document.getElementById('reminderText');
-                const minsLeft = nextClass.startMinutes - currentTime;
-                                text.innerHTML = `<i class="fa-solid fa-bell"></i> <strong>Upcoming:</strong> ${nextClass.subject} at ${nextClass.period} in ${nextClass.room} - ${minsLeft} min${minsLeft !== 1 ? 's' : ''} left`;
-                banner.classList.add('show');
             }
         }
 
@@ -1120,7 +705,7 @@
             const selectedFacultyId = document.getElementById('subFaculty').value;
             const container = document.getElementById('availableSubs');
 
-            if (!day || !period || !selectedFacultyId) {
+            if (!day ||!period ||!selectedFacultyId) {
                 container.innerHTML = '<p style="color: var(--text-secondary); font-size: 13px;">Select faculty, day and period to see available substitutes</p>';
                 return;
             }
@@ -1136,43 +721,35 @@
             const available = faculty.filter(f => {
                 if (f.id === selectedFacultyId) return false;
                 const hasClass = f.schedules?.some(s => s.day === day && s.period === period);
-                return !hasClass;
+                return!hasClass;
             });
 
             if (available.length === 0) {
                 container.innerHTML = '<p style="color: var(--danger); font-size: 13px;"><i class="fa-solid fa-triangle-exclamation"></i> No faculty available for substitution</p>';
             } else {
-                let html = `<p style="margin-bottom: 8px; font-size: 13px; color: var(--success);"><i class="fa-solid fa-check-circle"></i> Found ${available.length} available faculty for ${classInfo.subject}</p>`;
+                let html = `<p style="margin-bottom: 8px; font-size: 13px; color: var(--success);"><i class="fa-solid fa-check-circle"></i> Found ${available.length} available faculty for ${classInfo.subject}</p><div style="display: flex; flex-wrap: wrap; gap: 8px;">`;
                 available.forEach(f => {
                     html += `
-                        <button class="btn btn-success" style="margin: 4px;" onclick="assignSubstitute('${selectedFacultyId}', '${f.id}', '${day}', '${period}', '${classInfo.subject}')">
-                            <i class="fa                text.innerHTML = `<i class="fa-solid fa-bell"></i> <strong>Upcoming:</strong> ${nextClass.subject} in ${minsLeft} minute${minsLeft !== 1 ? 's' : ''} at ${nextClass.room}`;
-                banner.classList.add('show');
+                        <button class="btn btn-success" onclick="assignSubstitute('${selectedFacultyId}', '${f.id}', '${day}', '${period}', '${classInfo.subject}')">
+                            <i class="fa-solid fa-user-check"></i> ${f.name}
+                        </button>
+                    `;
+                });
+                html += '</div>';
+                container.innerHTML = html;
             }
         }
 
-        function closeReminder() {
-            document.getElementById('reminderBanner').classList.remove('show');
-        }
-
-        function requestSubstitution(facultyId, day, period) {
-            const f = faculty.find(f => f.id === facultyId);
-            const schedule = f.schedules.find(s => s.day === day && s.period === period);
+        function assignSubstitute(origId, subId, day, period, subject) {
+            const original = faculty.find(f => f.id === origId);
+            const substitute = faculty.find(f => f.id === subId);
             
-            const freeFaculty = faculty.filter(fac => {
-                if (fac.id === facultyId) return false;
-                const busy = fac.schedules?.some(s => s.day === day && s.period === period);
-                return !busy;
-            });
-
-            if (freeFaculty.length === 0) {
-                showToast('No faculty available for substitution at this time', 'warning');
-                return;
-            }
-
-            const names = freeFaculty.map(f => f.name).join(', ');
-            if (confirm(`Request substitution for ${schedule.subject} on ${day} at ${period}?\n\nAvailable: ${names}`)) {
-                showToast(`Substitution request sent for ${schedule.subject}`, 'success');
+            if (confirm(`Assign ${substitute.name} to substitute for ${original.name}'s ${subject} class on ${day} at ${period}?`)) {
+                showToast(`Substitution assigned: ${substitute.name} will take ${subject}`, 'success');
+                document.getElementById('subFaculty').value = '';
+                document.getElementById('subDay').value = '';
+                document.getElementById('subPeriod').value = '';
+                document.getElementById('availableSubs').innerHTML = '';
             }
         }
 
@@ -1214,195 +791,10 @@
         function addScheduleRow(data = {}) {
             const container = document.getElementById('scheduleContainer');
             const rowId = Date.now() + Math.random();
-                        const row = document.createElement('div');
+            const row = document.createElement('div');
             row.className = 'schedule-row';
             row.id = `row-${rowId}`;
             row.innerHTML = `
                 <select class="schedule-day">
                     <option value="">Day</option>
-                    ${days.map(d => `<option value="${d}" ${data.day === d ? 'selected' : ''}>${d}</option>`).join('')}
-                </select>
-                <select class="schedule-period">
-                    <option value="">Period</option>
-                    ${periods.map(p => `<option value="${p}" ${data.period === p ? 'selected' : ''}>${p}</option>`).join('')}
-                </select>
-                <input type="text" class="schedule-subject" placeholder="Subject" value="${data.subject || ''}">
-                <input type="text" class="schedule-room" placeholder="Room" value="${data.room || ''}">
-                <input type="text" class="schedule-section" placeholder="Section" value="${data.section || ''}">
-                <input type="number" class="schedule-semester" placeholder="Sem" value="${data.semester || ''}" min="1" max="8">
-                <button type="button" class="btn btn-danger" onclick="removeScheduleRow('${rowId}')">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
-            `;
-            container.appendChild(row);
-        }
-
-        function removeScheduleRow(rowId) {
-            document.getElementById(`row-${rowId}`).remove();
-        }
-
-        async function saveFaculty() {
-            const name = document.getElementById('facultyName').value.trim();
-            const dept = document.getElementById('facultyDept').value.trim();
-            const empid = document.getElementById('facultyEmpId').value.trim();
-            const email = document.getElementById('facultyEmail').value.trim();
-
-            if (!name || !dept) {
-                showToast('Name and Department are required', 'warning');
-                return;
-            }
-
-            const scheduleRows = document.querySelectorAll('.schedule-row');
-            const schedules = [];
-            scheduleRows.forEach(row => {
-                const day = row.querySelector('.schedule-day').value;
-                const period = row.querySelector('.schedule-period').value;
-                const subject = row.querySelector('.schedule-subject').value.trim();
-                const room = row.querySelector('.schedule-room').value.trim();
-                const section = row.querySelector('.schedule-section            const row = document.createElement('div');
-            row.className = 'schedule-row';
-            row.id = `row-${rowId}`;
-            row.innerHTML = `
-                <select class="schedule-day">
-                    <option value="">Day</option>
-                    ${days.map(d => `<option value="${d}" ${data.day === d ? 'selected' : ''}>${d}</option>`).join('')}
-                </select>
-                <select class="schedule-period">
-                    <option value="">Period</option>
-                    ${periods.map(p => `<option value="${p}" ${data.period === p ? 'selected' : ''}>${p}</option>`).join('')}
-                </select>
-                <input type="text" class="schedule-subject" placeholder="Subject" value="${data.subject || ''}">
-                <input type="text" class="schedule-room" placeholder="Room" value="${data.room || ''}">
-                <input type="text" class="schedule-section" placeholder="Section" value="${data.section || ''}">
-                <input type="number" class="schedule-semester" placeholder="Sem" value="${data.semester || ''}" min="1" max="8">
-                <button type="button" class="btn btn-danger" onclick="removeScheduleRow('${rowId}')">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
-            `;
-            container.appendChild(row);
-        }
-
-        function removeScheduleRow(rowId) {
-            document.getElementById(`row-${rowId}`).remove();
-        }
-
-        async function saveFaculty() {
-            const name = document.getElementById('facultyName').value.trim();
-            const dept = document.getElementById('facultyDept').value.trim();
-            const empid = document.getElementById('facultyEmpId').value.trim();
-            const email = document.getElementById('facultyEmail').value.trim();
-
-            if (!name || !dept) {
-                showToast('Name and Department are required', 'warning');
-                return;
-            }
-
-            const scheduleRows = document.querySelectorAll('.schedule-row');
-            const schedules = [];
-            scheduleRows.forEach(row => {
-                const day = row.querySelector('.schedule-day').value;
-                const period = row.querySelector('.schedule            const row = document.createElement('div');
-            row.className = 'schedule-row';
-            row.id = `row-${rowId}`;
-            row.innerHTML = `
-                <select class="schedule-day">
-                    <option value="">Day</option>
-                    ${days.map(d => `<option value="${d}" ${data.day === d ? 'selected' : ''}>${d}</option>`).join('')}
-                </select>
-                <select class="schedule-period">
-                    <option value="">Period</option>
-                    ${periods.map(p => `<option value="${p}" ${data.period === p ? 'selected' : ''}>${p}</option>`).join('')}
-                </select>
-                <input type="text" class="schedule-subject" placeholder="Subject" value="${data.subject || ''}">
-                <input type="text" class="schedule-room" placeholder="Room" value="${data.room || ''}">
-                <input type="text" class="schedule-section" placeholder="Section" value="${data.section || ''}">
-                <input type="number" class="schedule-semester" placeholder="Sem" value="${data.semester || ''}" min="1" max="8">
-                <button type="button" class="btn btn-danger" onclick="removeScheduleRow('${rowId}')">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
-            `;
-            container.appendChild(row);
-        }
-
-        function removeScheduleRow(rowId) {
-            document.getElementById(`row-${rowId}`).remove();
-        }
-
-        async function saveFaculty() {
-            const name = document.getElementById('facultyName').value.trim();
-            const dept = document.getElementById('facultyDept').value.trim();
-            const empid = document.getElementById('facultyEmpId').value.trim();
-            const email = document.getElementById('facultyEmail').value.trim();
-
-            if (!name || !dept) {
-                showToast('Name and Department are required', 'warning');
-                return;
-            }
-
-            const scheduleRows = document.querySelectorAll('.schedule-row');
-            const schedules = [];
-            scheduleRows.forEach(row => {
-                const day = row.querySelector('.schedule-day').value;
-                const period = row.querySelector('.schedule                const batch = db.batch();
-                imported.forEach(f => {
-                    const docRef = db.collection('faculty').doc();
-                    batch.set(docRef, f);
-                });
-                await batch.commit();
-
-                showToast(`Imported ${imported.length} faculty records`, 'success');
-                loadFaculty();
-            } catch (error) {
-                console.error('Import error:', error);
-                showToast('Error importing file. Check format.', 'danger');
-            }
-            event.target.value = '';
-        }
-
-        function showToast(message, type = 'info') {
-            const toast = document.getElementById('toast');
-            toast.textContent = message;
-            toast.className = `toast show ${type}`;
-            setTimeout(() => {
-                toast.classList.remove('show');
-            }, 3000);
-        }
-
-        // Firebase Init
-        const firebaseConfig = {
-            apiKey: "YOUR_API_KEY",
-            authDomain: "YOUR_AUTH_DOMAIN",
-            projectId: "YOUR_PROJECT_ID",
-            storageBucket: "YOUR_STORAGE_BUCKET",
-            messagingSenderId: "YOUR_SENDER_ID",
-            appId: "YOUR_APP_ID"
-        };
-
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
-
-        async function loadFaculty() {
-            try {
-                const snapshot = await db.collection('faculty').get();
-                faculty = snapshot.docs.map(doc => ({ id: doc.id,...doc.data() }));
-
-                if (faculty.length > 0 &&!currentFacultyId) {
-                    currentFacultyId = faculty[0].id;
-                }
-
-                renderFacultyList();
-                switchTab(currentTab);
-                checkReminders();
-                setInterval(checkReminders, 60000);
-            } catch (error) {
-                console.error('Error loading faculty:', error);
-                showToast('Error loading data from Firebase', 'danger');
-            }
-        }
-
-        // Init
-        loadFaculty();
-    </script>
-</body>
-</html>
-                
+                    ${days.map(d => `<option value="${d}" ${data.day === d? 'selected' : ''}>${d}</option>`
