@@ -4,364 +4,165 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>SBU Routine Manager</title>
-
-<link rel="stylesheet"
-href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
-
 :root{
---bg:#f3f6fb;
---card:#ffffff;
---primary:#0078d4;
---primary2:#106ebe;
---border:#d8dde6;
---text:#1f1f1f;
---muted:#666;
---success:#16a34a;
---danger:#dc2626;
+  --bg:#f3f6fb;--card:#ffffff;--primary:#0078d4;--primary-hover:#106ebe;
+  --border:#d8dde6;--text:#1f1f1f;--muted:#6b7280;--success:#16a34a;
+  --danger:#dc2626;--warning:#d97706;
 }
-
-*{
-margin:0;
-padding:0;
-box-sizing:border-box;
-font-family:'Segoe UI',sans-serif;
-}
-
-body{
-background:var(--bg);
-color:var(--text);
-}
-
-.topbar{
-background:white;
-padding:15px 25px;
-display:flex;
-justify-content:space-between;
-align-items:center;
-border-bottom:1px solid var(--border);
-position:sticky;
-top:0;
-z-index:100;
-}
-
-.logo{
-font-size:22px;
-font-weight:600;
-color:var(--primary);
-}
-
-.online{
-font-size:14px;
-color:var(--success);
-font-weight:600;
-}
-
-.nav{
-display:flex;
-gap:10px;
-padding:15px;
-background:white;
-border-bottom:1px solid var(--border);
-flex-wrap:wrap;
-}
-
-.nav button{
-padding:10px 18px;
-border:none;
-background:#eef4ff;
-cursor:pointer;
-border-radius:8px;
-font-weight:600;
-}
-
-.nav button.active{
-background:var(--primary);
-color:white;
-}
-
-.container{
-padding:20px;
-}
-
-.card{
-background:var(--card);
-border:1px solid var(--border);
-border-radius:12px;
-padding:20px;
-margin-bottom:20px;
-box-shadow:0 2px 8px rgba(0,0,0,.05);
-}
-
-.row{
-display:grid;
-grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-gap:15px;
-margin-bottom:15px;
-}
-
-input,select{
-width:100%;
-padding:10px;
-border:1px solid var(--border);
-border-radius:8px;
-}
-
-.btn{
-padding:10px 18px;
-border:none;
-border-radius:8px;
-cursor:pointer;
-font-weight:600;
-}
-
-.btn-primary{
-background:var(--primary);
-color:white;
-}
-
-.btn-danger{
-background:var(--danger);
-color:white;
-}
-
-.btn-success{
-background:var(--success);
-color:white;
-}
-
-table{
-width:100%;
-border-collapse:collapse;
-}
-
-th,td{
-border:1px solid var(--border);
-padding:10px;
-text-align:center;
-}
-
-th{
-background:#eef4ff;
-}
-
-.hidden{
-display:none;
-}
-
-.modal{
-position:fixed;
-top:0;
-left:0;
-width:100%;
-height:100%;
-background:rgba(0,0,0,.5);
-display:none;
-justify-content:center;
-align-items:center;
-}
-
-.modal-content{
-background:white;
-width:95%;
-max-width:900px;
-padding:20px;
-border-radius:12px;
-max-height:90vh;
-overflow:auto;
-}
-
-.scheduleRow{
-display:grid;
-grid-template-columns:
-1fr 1fr 1fr 1fr 1fr auto;
-gap:10px;
-margin-bottom:10px;
-}
-
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',system-ui,sans-serif;}
+body{background:var(--bg);color:var(--text);min-height:100vh;}
+#loginPage{display:flex;justify-content:center;align-items:center;height:100vh;background:var(--bg);}
+.login-card{width:400px;max-width:90%;}
+#appContainer{display:none;min-height:100vh;flex-direction:column;}
+.app-header{background:white;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100;}
+.header-top{padding:12px 24px;display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;}
+.logo{font-size:20px;font-weight:700;color:var(--primary);display:flex;align-items:center;gap:8px;}
+.header-right{display:flex;align-items:center;gap:16px;}
+.online{font-size:13px;color:var(--success);font-weight:600;display:flex;align-items:center;gap:6px;}
+#subAlert{font-weight:600;color:var(--danger);font-size:13px;}
+.nav-tabs{display:flex;gap:8px;padding:0 24px 12px 24px;background:white;overflow-x:auto;}
+.nav-tabs button{padding:8px 16px;border:none;background:#eef4ff;cursor:pointer;border-radius:6px;font-weight:600;font-size:14px;white-space:nowrap;transition:all.2s;}
+.nav-tabs button:hover{background:#dbeafe;}
+.nav-tabs button.active{background:var(--primary);color:white;}
+.main-wrapper{flex:1;padding:20px 24px;max-width:1400px;margin:0 auto;width:100%;}
+.card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:20px;box-shadow:0 1px 3px rgba(0,0,0,.04);}
+.row{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-bottom:12px;}
+input,select,textarea{width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:8px;font-size:14px;transition:border.2s;}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--primary);}
+.btn{padding:9px 16px;border:none;border-radius:8px;cursor:pointer;font-weight:600;font-size:14px;display:inline-flex;align-items:center;gap:6px;transition:all.2s;}
+.btn:hover{transform:translateY(-1px);}
+.btn-primary{background:var(--primary);color:white;}
+.btn-primary:hover{background:var(--primary-hover);}
+.btn-danger{background:var(--danger);color:white;}
+.btn-success{background:var(--success);color:white;}
+.btn-secondary{background:#e5e7eb;color:var(--text);}
+.btn-warning{background:var(--warning);color:white;}
+table{width:100%;border-collapse:collapse;font-size:14px;}
+th,td{border:1px solid var(--border);padding:10px;text-align:center;}
+th{background:#f8fafc;font-weight:600;color:var(--muted);font-size:12px;text-transform:uppercase;}
+td b{color:var(--primary);}
+.hidden{display:none!important;}
+.page{min-height:400px;}
+.modal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.5);display:none;justify-content:center;align-items:center;z-index:1000;padding:20px;}
+.modal-content{background:white;width:100%;max-width:900px;padding:24px;border-radius:12px;max-height:90vh;overflow:auto;}
+.scheduleRow{display:grid;grid-template-columns:1.2fr 1.2fr 1.5fr 1fr 1fr auto;gap:10px;margin-bottom:10px;align-items:center;}
+.empty-state{text-align:center;padding:60px 20px;color:var(--muted);}
+.empty-state i{font-size:48px;margin-bottom:12px;opacity:.3;}
+.badge{display:inline-block;padding:4px 10px;border-radius:6px;font-size:12px;font-weight:600;}
+.badge-success{background:#dcfce7;color:#166534;}
+.badge-danger{background:#fee2e2;color:#991b1b;}
+.badge-warning{background:#fef3c7;color:#92400e;}
+.sub-card{padding:12px;margin:10px 0;border-left:4px solid var(--primary);background:#f0f7ff;border-radius:6px;}
 @media(max-width:768px){
-.scheduleRow{
-grid-template-columns:1fr;
+.header-top{padding:12px 16px;}
+.nav-tabs{padding:0 16px 12px 16px;}
+.main-wrapper{padding:16px;}
+.scheduleRow{grid-template-columns:1fr;gap:8px;}
+.scheduleRow button{justify-self:start;}
+  table{font-size:12px;}
+  th,td{padding:6px 4px;}
 }
+@media print{
+ .no-print{display:none!important;}
+  body{background:white;}
+ .card{box-shadow:none;border:1px solid #000;}
 }
 
+/* Leave Form PDF Styles */
+.leave-form-pdf{width:794px;padding:40px;background:white;color:#000;font-family:'Times New Roman',serif;font-size:12pt;}
+.leave-form-pdf h2{text-align:center;font-size:18pt;margin:10px 0 5px 0;}
+.leave-form-pdf h3{text-align:center;font-size:14pt;margin:5px 0 20px 0;}
+.leave-form-pdf.form-row{margin:12px 0;display:flex;gap:10px;}
+.leave-form-pdf.form-label{min-width:180px;font-weight:600;}
+.leave-form-pdf.form-value{flex:1;border-bottom:1px dotted #000;min-height:20px;}
+.leave-form-pdf table{width:100%;border-collapse:collapse;margin:20px 0;font-size:11pt;}
+.leave-form-pdf th,.leave-form-pdf td{border:1px solid #000;padding:6px;text-align:center;}
+.leave-form-pdf.signature-section{margin-top:40px;}
 </style>
 </head>
 
 <body>
-<div id="loginPage"
-style="
-display:flex;
-justify-content:center;
-align-items:center;
-height:100vh;
-background:#f3f6fb;
-">
-
-<div class="card"
-style="width:400px;max-width:90%;">
-
-<h2 style="margin-bottom:20px;">
-SBU Routine Manager Login
-</h2>
-
-<input
-id="loginEmail"
-type="email"
-placeholder="Email"
-style="margin-bottom:10px;">
-
-<input
-id="loginPassword"
-type="password"
-placeholder="Password"
-style="margin-bottom:15px;">
-
-<button
-class="btn btn-primary"
-style="width:100%;"
-onclick="loginUser()">
-
-Login
-
-</button>
-
-<br><br>
-
-<div id="loginMsg"></div>
-
+<!-- LOGIN PAGE -->
+<div id="loginPage">
+  <div class="card login-card">
+    <h2 style="margin-bottom:20px;"><i class="fa-solid fa-calendar-days"></i> SBU Routine Manager</h2>
+    <input id="loginEmail" type="email" placeholder="Email" style="margin-bottom:10px;">
+    <input id="loginPassword" type="password" placeholder="Password" style="margin-bottom:15px;">
+    <button class="btn btn-primary" style="width:100%;" onclick="loginUser()">Login</button>
+    <div id="loginMsg" style="margin-top:12px;color:var(--danger);font-size:13px;"></div>
+  </div>
 </div>
 
-</div>
-<div id="appContainer" style="display:none;">
+<!-- MAIN APP -->
+<div id="appContainer">
+  <header class="app-header no-print">
+    <div class="header-top">
+      <div class="logo"><i class="fa-solid fa-calendar-days"></i> SBU Routine Manager</div>
+      <div class="header-right">
+        <div id="subAlert"></div>
+        <span class="online" id="onlineCount"><i class="fa-solid fa-circle" style="font-size:8px;"></i> 1 Online</span>
+        <button class="btn btn-danger" onclick="logoutUser()"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
+      </div>
+    </div>
+    <div class="nav-tabs">
+      <button class="active" onclick="showPage('dashboard',this)"><i class="fa-solid fa-gauge"></i> Dashboard</button>
+      <button onclick="showPage('today',this)"><i class="fa-solid fa-calendar-day"></i> Today's Classes</button>
+      <button onclick="showPage('faculty',this)"><i class="fa-solid fa-users"></i> Faculty</button>
+      <button onclick="showPage('substitution',this)"><i class="fa-solid fa-people-arrows"></i> Substitution</button>
+      <button onclick="showPage('leave',this)"><i class="fa-solid fa-file-lines"></i> Leave Application</button>
+      <button onclick="showPage('history',this)"><i class="fa-solid fa-clock-rotate-left"></i> History</button>
+    </div>
+  </header>
 
-<div class="topbar">
-<div class="logo">
-<i class="fa-solid fa-calendar-days"></i>
-SBU Routine Manager
-</div>
-<div id="subAlert"
-style="
-font-weight:bold;
-color:#dc2626;
-padding:8px;
-">
-</div>
-<div>
+  <main class="main-wrapper">
+    <div class="card no-print">
+      <div class="row">
+        <select id="facultySelect" onchange="loadDashboard()"><option>Select Faculty</option></select>
+        <select id="deptFilter" onchange="filterDepartment()"><option value="">All Departments</option></select>
+        <button class="btn btn-primary" onclick="openModal()"><i class="fa-solid fa-plus"></i> Add Faculty</button>
+        <button class="btn btn-success" onclick="exportData()"><i class="fa-solid fa-download"></i> Export</button>
+      </div>
+    </div>
 
-<span
-class="online"
-id="onlineCount">
-1 Online
-</span>
-
-<button
-class="btn btn-danger"
-onclick="logoutUser()">
-
-Logout
-
-</button>
-
-</div>
-
-<div class="nav">
-<button class="active" onclick="showPage('dashboard',this)">
-Dashboard
-</button>
-
-<button onclick="showPage('today',this)">
-Today's Classes
-</button>
-
-<button onclick="showPage('faculty',this)">
-Faculty
-</button>
-
-<button onclick="showPage('substitution',this)">
-Substitution
-</button>
+    <div id="activeSubs"></div>
+    <div id="dashboardPage" class="page"></div>
+    <div id="todayPage" class="page hidden"></div>
+    <div id="facultyPage" class="page hidden"></div>
+    <div id="substitutionPage" class="page hidden"></div>
+    <div id="leavePage" class="page hidden"></div>
+    <div id="historyPage" class="page hidden"></div>
+  </main>
 </div>
 
-<div class="container">
-
-<div class="card">
-<div class="row">
-
-<select id="facultySelect"
-onchange="loadDashboard()">
-<option>Select Faculty</option>
-</select>
-
-<select id="deptFilter"
-onchange="filterDepartment()">
-<option value="">
-All Departments
-</option>
-</select>
-
-<button class="btn btn-primary"
-onclick="openModal()">
-Add Faculty
-</button>
-
-<button class="btn btn-success"
-onclick="exportData()">
-Export Backup
-</button>
-
-</div>
-</div>
-
-<div id="activeSubs"></div>
-<div id="dashboardPage"></div>
-<div id="todayPage" class="hidden"></div>
-<div id="facultyPage" class="hidden"></div>
-<div id="substitutionPage" class="hidden"></div>
-
-</div>
 <!-- MODAL -->
-
 <div class="modal" id="facultyModal">
-<div class="modal-content">
-
-<h2 style="margin-bottom:15px">
-Faculty Details
-</h2>
-
-<div class="row">
-<input id="name" placeholder="Faculty Name">
-<input id="dept" placeholder="Department">
-<input id="empid" placeholder="Employee ID">
-<input id="email" placeholder="Email">
+  <div class="modal-content">
+    <h2 style="margin-bottom:20px">Faculty Details</h2>
+    <div class="row">
+      <input id="name" placeholder="Faculty Name *">
+      <input id="dept" placeholder="Department *">
+      <input id="empid" placeholder="Employee ID">
+      <input id="email" placeholder="Email">
+      <input id="mobile" placeholder="Mobile No">
+      <input id="designation" placeholder="Designation">
+    </div>
+    <h3 style="margin:20px 0 12px 0">Weekly Schedule</h3>
+    <div id="scheduleContainer"></div>
+    <button class="btn btn-success" onclick="addScheduleRow()" style="margin-bottom:20px"><i class="fa-solid fa-plus"></i> Add Schedule</button>
+    <hr style="margin:20px 0;border:none;border-top:1px solid var(--border)">
+    <div style="display:flex;gap:10px;justify-content:flex-end;">
+      <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveFaculty()"><i class="fa-solid fa-save"></i> Save Faculty</button>
+    </div>
+  </div>
 </div>
 
-<h3 style="margin:15px 0">
-Weekly Schedule
-</h3>
-
-<div id="scheduleContainer"></div>
-
-<button class="btn btn-success"
-onclick="addScheduleRow()">
-Add Schedule
-</button>
-
-<hr style="margin:20px 0">
-
-<button class="btn btn-primary"
-onclick="saveFaculty()">
-Save Faculty
-</button>
-
-<button class="btn btn-danger"
-onclick="closeModal()">
-Close
-</button>
-
-</div>
-</div>
+<!-- HIDDEN LEAVE FORM FOR PDF -->
+<div id="leaveFormTemplate" style="position:absolute;left:-9999px;top:0;"></div>
 
 <!-- FIREBASE -->
 
@@ -370,6 +171,7 @@ Close
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>  
 
 <script>
+const { jsPDF } = window.jspdf;
 
 const firebaseConfig = {
   apiKey: "AIzaSyBIR71p9NAWc5yK6tK0SV2EHJFDa-U2GdU",
@@ -400,1065 +202,820 @@ const facultyRef = db.ref("faculty");
 const substitutionRef = db.ref("substitutions");
 const presenceRef=db.ref("presence");
 
-let faculty=[];
+let faculty = [];
+let currentFacultyId = "";
+let editId = null;
+let substitutions = [];
+let leaveApps = [];
 
-let currentFacultyId="";
+const days = ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+const periods = ["09:00-10:00","10:00-11:00","11:00-12:00","12:00-01:00","01:00-02:00","02:00-03:00","03:00-04:00","04:00-05:00"];
 
-let editId=null;
-
-const days=[
-"Monday",
-"Tuesday",
-"Wednesday",
-"Thursday",
-"Friday",
-"Saturday"
-];
-
-const periods=[
-"09:00-10:00",
-"10:00-11:00",
-"11:00-12:00",
-"12:00-13:00",
-"13:00-14:00",
-"14:00-15:00",
-"15:00-16:00",
-"16:00-17:00"
-];
 function loginUser(){
+  const email = document.getElementById("loginEmail").value;
+  const password = document.getElementById("loginPassword").value;
+  auth.signInWithEmailAndPassword(email,password)
+.catch(err=>{document.getElementById("loginMsg").innerHTML=err.message;});
+}
 
-const email=
-document.getElementById(
-"loginEmail"
-).value;
+function logoutUser(){auth.signOut();}
 
-const password=
-document.getElementById(
-"loginPassword"
-).value;
-
-auth
-.signInWithEmailAndPassword(
-email,
-password
-)
-.catch(err=>{
-
-document.getElementById(
-"loginMsg"
-).innerHTML=
-err.message;
-
+firebase.auth().onAuthStateChanged(user=>{
+  if(!user){
+    document.getElementById("loginPage").style.display="flex";
+    document.getElementById("appContainer").style.display="none";
+    return;
+  }
+  document.getElementById("loginPage").style.display="none";
+  document.getElementById("appContainer").style.display="flex";
+  setupPresence();
+  loadFaculty();
+  loadSubstitutions();
+  loadLeaveApplications();
+  loadActiveSubstitutions();
+  updateSubAlert();
 });
 
-}
-
-function logoutUser(){
-
-auth.signOut();
-
-}
-firebase.auth().onAuthStateChanged(
-user=>{
-
-if(!user){
-
-document.getElementById(
-"loginPage"
-).style.display="flex";
-
-document.getElementById(
-"appContainer"
-).style.display="none";
-
-return;
-
-}
-
-document.getElementById(
-"loginPage"
-).style.display="none";
-
-document.getElementById(
-"appContainer"
-).style.display="block";
-
-setupPresence();
-
-loadFaculty();
-
-loadActiveSubstitutions();
-
-updateSubAlert();
-
-}
-);
-
 function setupPresence(){
-
-const user=presenceRef.push();
-
-user.set(true);
-
-user.onDisconnect().remove();
-
-presenceRef.on(
-"value",
-snap=>{
-document.getElementById(
-"onlineCount"
-).innerText=
-snap.numChildren()+" Online";
-}
-);
-
+  const user = presenceRef.push();
+  user.set(true);
+  user.onDisconnect().remove();
+  presenceRef.on("value",snap=>{
+    document.getElementById("onlineCount").innerHTML=`<i class="fa-solid fa-circle" style="font-size:8px;"></i> ${snap.numChildren()} Online`;
+  });
 }
 
 function showPage(page,btn){
-
-document
-.querySelectorAll(".nav button")
-.forEach(b=>b.classList.remove("active"));
-
-btn.classList.add("active");
-
-document
-.getElementById("dashboardPage")
-.classList.add("hidden");
-
-document
-.getElementById("todayPage")
-.classList.add("hidden");
-
-document
-.getElementById("facultyPage")
-.classList.add("hidden");
-
-document
-.getElementById("substitutionPage")
-.classList.add("hidden");
-
-document
-.getElementById(page+"Page")
-.classList.remove("hidden");
-
-if(page==="dashboard")
-loadDashboard();
-
-if(page==="today")
-loadToday();
-
-if(page==="faculty")
-loadFacultyPage();
-
-if(page==="substitution")
-loadSubstitution();
-
+  document.querySelectorAll(".nav-tabs button").forEach(b=>b.classList.remove("active"));
+  btn.classList.add("active");
+  document.querySelectorAll(".page").forEach(p=>p.classList.add("hidden"));
+  document.getElementById(page+"Page").classList.remove("hidden");
+  if(page==="dashboard")loadDashboard();
+  if(page==="today")loadToday();
+  if(page==="faculty")loadFacultyPage();
+  if(page==="substitution")loadSubstitutionPage();
+  if(page==="leave")loadLeavePage();
+  if(page==="history")loadHistoryPage();
 }
 
+// FACULTY CRUD - keeping your existing functions
 function openModal(){
-
-editId=null;
-
-document
-.getElementById("facultyModal")
-.style.display="flex";
-
-document.getElementById("name").value="";
-document.getElementById("dept").value="";
-document.getElementById("empid").value="";
-document.getElementById("email").value="";
-
-document
-.getElementById("scheduleContainer")
-.innerHTML="";
-
-addScheduleRow();
-
+  editId=null;
+  document.getElementById("facultyModal").style.display="flex";
+  document.getElementById("name").value="";
+  document.getElementById("dept").value="";
+  document.getElementById("empid").value="";
+  document.getElementById("email").value="";
+  document.getElementById("mobile").value="";
+  document.getElementById("designation").value="";
+  document.getElementById("scheduleContainer").innerHTML="";
+  addScheduleRow();
 }
 
-function closeModal(){
+function closeModal(){document.getElementById("facultyModal").style.display="none";}
 
-document
-.getElementById("facultyModal")
-.style.display="none";
-
-}
 function addScheduleRow(data={}){
-
-const id=Date.now()+Math.random();
-
-const row=document.createElement("div");
-
-row.className="scheduleRow";
-
-row.id=id;
-
-row.innerHTML=`
-
-<select class="day">
-
-<option value="">Day</option>
-
-${days.map(d=>
-`<option ${data.day===d?'selected':''}>
-${d}
-</option>`
-).join("")}
-
-</select>
-
-<select class="period">
-
-<option value="">Period</option>
-
-${periods.map(p=>
-`<option ${data.period===p?'selected':''}>
-${p}
-</option>`
-).join("")}
-
-</select>
-
-<input class="subject"
-placeholder="Subject"
-value="${data.subject||''}">
-
-<input class="room"
-placeholder="Room"
-value="${data.room||''}">
-
-<input class="section"
-placeholder="Section"
-value="${data.section||''}">
-
-<button class="btn btn-danger"
-onclick="removeSchedule('${id}')">
-X
-</button>
-
-`;
-
-document
-.getElementById("scheduleContainer")
-.appendChild(row);
-
+  const id=Date.now()+Math.random();
+  const row=document.createElement("div");
+  row.className="scheduleRow";
+  row.id=id;
+  row.innerHTML=`
+    <select class="day"><option value="">Day</option>${days.map(d=>`<option ${data.day===d?'selected':''}>${d}</option>`).join("")}</select>
+    <select class="period"><option value="">Period</option>${periods.map(p=>`<option ${data.period===p?'selected':''}>${p}</option>`).join("")}</select>
+    <input class="subject" placeholder="Subject" value="${data.subject||''}">
+    <input class="room" placeholder="Room" value="${data.room||''}">
+    <input class="section" placeholder="Section/Class" value="${data.section||''}">
+    <button class="btn btn-danger" onclick="removeSchedule('${id}')"><i class="fa-solid fa-xmark"></i></button>
+  `;
+  document.getElementById("scheduleContainer").appendChild(row);
 }
 
-function removeSchedule(id){
-
-document.getElementById(id)?.remove();
-
-}
+function removeSchedule(id){document.getElementById(id)?.remove();}
 
 function saveFaculty(){
-
-const name=
-document.getElementById("name").value;
-
-const dept=
-document.getElementById("dept").value;
-
-if(!name || !dept){
-
-alert("Name and Department Required");
-
-return;
-
-}
-
-const schedules=[];
-
-document
-.querySelectorAll(".scheduleRow")
-.forEach(row=>{
-
-schedules.push({
-
-day:
-row.querySelector(".day").value,
-
-period:
-row.querySelector(".period").value,
-
-subject:
-row.querySelector(".subject").value,
-
-room:
-row.querySelector(".room").value,
-
-section:
-row.querySelector(".section").value
-
-});
-
-});
-
-const obj={
-
-name,
-
-dept,
-
-empid:
-document.getElementById("empid").value,
-
-email:
-document.getElementById("email").value,
-
-schedules
-
-};
-
-if(editId){
-
-facultyRef
-.child(editId)
-.set(obj);
-
-}else{
-
-facultyRef.push(obj);
-
-}
-
-closeModal();
-
+  const name=document.getElementById("name").value;
+  const dept=document.getElementById("dept").value;
+  if(!name ||!dept){alert("Name and Department Required");return;}
+  const schedules=[];
+  document.querySelectorAll(".scheduleRow").forEach(row=>{
+    const day=row.querySelector(".day").value;
+    const period=row.querySelector(".period").value;
+    if(day&&period){
+      schedules.push({
+        day,period,
+        subject:row.querySelector(".subject").value,
+        room:row.querySelector(".room").value,
+        section:row.querySelector(".section").value
+      });
+    }
+  });
+  const obj={
+    name,dept,
+    empid:document.getElementById("empid").value,
+    email:document.getElementById("email").value,
+    mobile:document.getElementById("mobile").value,
+    designation:document.getElementById("designation").value,
+    schedules
+  };
+  if(editId){facultyRef.child(editId).set(obj);}else{facultyRef.push(obj);}
+  closeModal();
 }
 
 function loadFaculty(){
-
-facultyRef.on(
-"value",
-snap=>{
-
-const data=snap.val();
-
-faculty=data
-? Object.keys(data)
-.map(id=>({
-id,
-...data[id]
-}))
-: [];
-
-populateFacultyDropdown();
-
-loadDashboard();
-
-}
-);
-
+  facultyRef.on("value",snap=>{
+    const data=snap.val();
+    faculty=data?Object.keys(data).map(id=>({id,...data[id]})):[];
+    populateFacultyDropdown();
+    loadDashboard();
+  });
 }
 
 function populateFacultyDropdown(){
-
-const select=
-document.getElementById(
-"facultySelect"
-);
-
-select.innerHTML="";
-
-faculty.forEach(f=>{
-
-select.innerHTML+=`
-
-<option value="${f.id}">
-${f.name} (${f.dept})
-</option>
-
-`;
-
-});
-
-if(faculty.length){
-
-currentFacultyId=
-faculty[0].id;
-
-select.value=
-currentFacultyId;
-
-}
-
-populateDepartments();
-
+  const select=document.getElementById("facultySelect");
+  select.innerHTML="";
+  faculty.forEach(f=>{select.innerHTML+=`<option value="${f.id}">${f.name} (${f.dept})</option>`;});
+  if(faculty.length){currentFacultyId=faculty[0].id;select.value=currentFacultyId;}
+  populateDepartments();
 }
 
 function populateDepartments(){
-
-const depts=[
-...new Set(
-faculty.map(f=>f.dept)
-)
-];
-
-const select=
-document.getElementById(
-"deptFilter"
-);
-
-select.innerHTML=
-'<option value="">All Departments</option>';
-
-depts.forEach(d=>{
-
-select.innerHTML+=
-`<option>${d}</option>`;
-
-});
-
-}
-    function filterDepartment(){
-
-const dept=
-document.getElementById(
-"deptFilter"
-).value;
-
-const select=
-document.getElementById(
-"facultySelect"
-);
-
-select.innerHTML="";
-
-faculty
-.filter(f=>
-!dept || f.dept===dept
-)
-.forEach(f=>{
-
-select.innerHTML+=`
-<option value="${f.id}">
-${f.name}
-</option>
-`;
-
-});
-
-if(select.options.length){
-
-currentFacultyId=
-select.options[0].value;
-
-select.value=
-currentFacultyId;
-
+  const depts=[...new Set(faculty.map(f=>f.dept))];
+  const select=document.getElementById("deptFilter");
+  select.innerHTML='<option value="">All Departments</option>';
+  depts.forEach(d=>{select.innerHTML+=`<option>${d}</option>`;});
 }
 
-loadDashboard();
-
+function filterDepartment(){
+  const dept=document.getElementById("deptFilter").value;
+  const select=document.getElementById("facultySelect");
+  select.innerHTML="";
+  faculty.filter(f=>!dept || f.dept===dept).forEach(f=>{
+    select.innerHTML+=`<option value="${f.id}">${f.name}</option>`;
+  });
+  if(select.options.length){currentFacultyId=select.options[0].value;select.value=currentFacultyId;}
+  loadDashboard();
 }
 
 function loadDashboard(){
-
-currentFacultyId=
-document.getElementById(
-"facultySelect"
-).value
-|| currentFacultyId;
-
-const f=
-faculty.find(
-x=>x.id===currentFacultyId
-);
-
-if(!f){
-
-document.getElementById(
-"dashboardPage"
-).innerHTML=
-"<div class='card'>No Faculty Selected</div>";
-
-return;
-
-}
-
-let html=`
-
-<div class="card">
-
-<h2>${f.name}</h2>
-
-<p>
-${f.dept}
-|
-${f.empid||'No ID'}
-|
-${f.email||'No Email'}
-</p>
-
-</div>
-
-<div class="card">
-
-<table>
-
-<tr>
-<th>Day</th>
-${periods.map(
-p=>`<th>${p}</th>`
-).join("")}
-</tr>
-
-`;
-
-days.forEach(day=>{
-
-html+=`<tr><td><b>${day}</b></td>`;
-
-periods.forEach(period=>{
-
-const cls=
-f.schedules?.find(
-s=>s.day===day &&
-s.period===period
-);
-
-html+=cls
-?
-`<td>
-<b>${cls.subject}</b>
-<br>
-Section: ${cls.section}
-<br>
-${cls.room}
-</td>`
-:
-"<td>Free</td>";
-});
-
-html+="</tr>";
-
-});
-
-html+=`
-</table>
-</div>
-`;
-
-document.getElementById(
-"dashboardPage"
-).innerHTML=html;
-
+  currentFacultyId=document.getElementById("facultySelect").value||currentFacultyId;
+  const f=faculty.find(x=>x.id===currentFacultyId);
+  if(!f){
+    document.getElementById("dashboardPage").innerHTML=`<div class="empty-state"><i class="fa-solid fa-user-slash"></i><p>No Faculty Selected</p></div>`;
+    return;
+  }
+  let html=`<div class="card"><h2>${f.name}</h2><p style="color:var(--muted);margin-top:4px;">${f.dept} | ${f.empid||'No ID'} | ${f.email||'No Email'}</p></div><div class="card"><table><tr><th>Day</th>${periods.map(p=>`<th>${p}</th>`).join("")}</tr>`;
+  days.forEach(day=>{
+    html+=`<tr><td><b>${day}</b></td>`;
+    periods.forEach(period=>{
+      const cls=f.schedules?.find(s=>s.day===day&&s.period===period);
+      html+=cls?`<td><b>${cls.subject}</b><br><span style="font-size:12px;color:var(--muted)">Sec: ${cls.section}<br>${cls.room}</span></td>`:"<td>-</td>";
+    });
+    html+="</tr>";
+  });
+  html+=`</table></div>`;
+  document.getElementById("dashboardPage").innerHTML=html;
 }
 
 function loadToday(){
-
-const f=
-faculty.find(
-x=>x.id===currentFacultyId
-);
-
-if(!f) return;
-
-const today=
-new Date()
-.toLocaleDateString(
-"en-US",
-{weekday:"long"}
-);
-
-const classes=
-f.schedules?.filter(
-s=>s.day===today
-) || [];
-
-let html=`
-<div class="card">
-<h2>${today}</h2>
-</div>
-`;
-
-if(classes.length===0){
-
-html+=`
-<div class="card">
-No Classes Today
-</div>
-`;
-
-}else{
-
-classes.forEach(c=>{
-
-html+=`
-<div class="card">
-<h3>${c.subject}</h3>
-<p>
-${c.period}
-|
-Room ${c.room}
-|
-${c.section}
-</p>
-</div>
-`;
-
-});
-
+  const f=faculty.find(x=>x.id===currentFacultyId);
+  if(!f) return;
+  const today=new Date().toLocaleDateString("en-US",{weekday:"long"});
+  const classes=f.schedules?.filter(s=>s.day===today) || [];
+  let html=`<div class="card"><h2>${today}'s Schedule</h2></div>`;
+  if(classes.length===0){
+    html+=`<div class="empty-state"><i class="fa-solid fa-calendar-xmark"></i><p>No Classes Today</p></div>`;
+  }else{
+    classes.forEach(c=>{
+      html+=`<div class="card"><h3>${c.subject}</h3><p style="color:var(--muted);margin-top:6px;"><i class="fa-solid fa-clock"></i> ${c.period} | <i class="fa-solid fa-door-open"></i> Room ${c.room} | <i class="fa-solid fa-users"></i> ${c.section}</p></div>`;
+    });
+  }
+  document.getElementById("todayPage").innerHTML=html;
 }
 
-document.getElementById(
-"todayPage"
-).innerHTML=html;
-
-}
-    function loadFacultyPage(){
-
-let html=`
-<div class="card">
-<h2>
-Faculty Management
-</h2>
-<p>
-Total Faculty :
-${faculty.length}
-</p>
-</div>
-`;
-
-faculty.forEach(f=>{
-
-html+=`
-
-<div class="card">
-
-<h3>${f.name}</h3>
-
-<p>
-${f.dept}
-|
-${f.empid||'N/A'}
-|
-${f.email||'N/A'}
-</p>
-
-<br>
-
-<button
-class="btn btn-primary"
-onclick="editFaculty('${f.id}')">
-Edit
-</button>
-
-<button
-class="btn btn-danger"
-onclick="deleteFaculty('${f.id}')">
-Delete
-</button>
-
-</div>
-
-`;
-
-});
-
-document.getElementById(
-"facultyPage"
-).innerHTML=html;
-
+function loadFacultyPage(){
+  let html=`<div class="card"><h2>Faculty Management</h2><p style="color:var(--muted);margin-top:4px;">Total Faculty: ${faculty.length}</p></div>`;
+  if(faculty.length===0){
+    html+=`<div class="empty-state"><i class="fa-solid fa-users-slash"></i><p>No faculty added yet</p></div>`;
+  }else{
+    faculty.forEach(f=>{
+      html+=`<div class="card"><div style="display:flex;justify-content:space-between;align-items:start;gap:16px;flex-wrap:wrap;"><div><h3>${f.name}</h3><p style="color:var(--muted);margin-top:6px;">${f.dept} | ${f.empid||'N/A'} | ${f.email||'N/A'}</p></div><div style="display:flex;gap:8px;"><button class="btn btn-primary" onclick="editFaculty('${f.id}')"><i class="fa-solid fa-edit"></i> Edit</button><button class="btn btn-danger" onclick="deleteFaculty('${f.id}')"><i class="fa-solid fa-trash"></i> Delete</button></div></div></div>`;
+    });
+  }
+  document.getElementById("facultyPage").innerHTML=html;
 }
 
 function editFaculty(id){
-
-const f=
-faculty.find(
-x=>x.id===id
-);
-
-if(!f) return;
-
-editId=id;
-
-document.getElementById(
-"name"
-).value=f.name||"";
-
-document.getElementById(
-"dept"
-).value=f.dept||"";
-
-document.getElementById(
-"empid"
-).value=f.empid||"";
-
-document.getElementById(
-"email"
-).value=f.email||"";
-
-document.getElementById(
-"scheduleContainer"
-).innerHTML="";
-
-if(f.schedules){
-
-f.schedules.forEach(
-s=>addScheduleRow(s)
-);
-
-}
-
-document.getElementById(
-"facultyModal"
-).style.display="flex";
-
+  const f=faculty.find(x=>x.id===id);
+  if(!f) return;
+  editId=id;
+  document.getElementById("name").value=f.name||"";
+  document.getElementById("dept").value=f.dept||"";
+  document.getElementById("empid").value=f.empid||"";
+  document.getElementById("email").value=f.email||"";
+  document.getElementById("mobile").value=f.mobile||"";
+  document.getElementById("designation").value=f.designation||"";
+  document.getElementById("scheduleContainer").innerHTML="";
+  if(f.schedules){f.schedules.forEach(s=>addScheduleRow(s));}
+  document.getElementById("facultyModal").style.display="flex";
 }
 
 function deleteFaculty(id){
-
-if(
-!confirm(
-"Delete Faculty?"
-)
-) return;
-
-facultyRef
-.child(id)
-.remove();
-
+  if(!confirm("Delete Faculty? This will remove all schedules.")) return;
+  facultyRef.child(id).remove();
+  showToast('Faculty deleted','success');
 }
 
-function loadSubstitution(){
-
-let html=`
-
-<div class="card">
-
-<h2>
-Substitution Finder
-</h2>
-
-<div class="row">
-
-<select id="subDay">
-
-<option value="">
-Select Day
-</option>
-
-${days.map(
-d=>`<option>${d}</option>`
-).join("")}
-
-</select>
-
-<select id="subPeriod">
-
-<option value="">
-Select Period
-</option>
-
-${periods.map(
-p=>`<option>${p}</option>`
-).join("")}
-
-</select>
-
-<button
-class="btn btn-primary"
-onclick="findAvailableFaculty()">
-
-Find Faculty
-
-</button>
-
-</div>
-
-<div id="subResult">
-
-</div>
-
-</div>
-
-`;
-
-document.getElementById(
-"substitutionPage"
-).innerHTML=html;
-
+// SUBSTITUTION MODULE
+function loadSubstitutionPage(){
+  let html=`
+    <div class="card">
+      <h2><i class="fa-solid fa-people-arrows"></i> Faculty Substitution Manager</h2>
+      <div class="row" style="margin-top:20px;">
+        <select id="subFacultySelect">
+          <option value="">Select Faculty on Leave</option>
+          ${faculty.map(f=>`<option value="${f.id}">${f.name} - ${f.dept}</option>`).join("")}
+        </select>
+        <input type="date" id="subDate" value="${new Date().toISOString().split('T')[0]}" onchange="updateSubDayFromDate()">
+        <select id="subDay">
+          <option value="">Select Day</option>
+          ${days.map(d=>`<option>${d}</option>`).join("")}
+        </select>
+        <select id="subPeriod">
+          <option value="">Select Period</option>
+          ${periods.map(p=>`<option>${p}</option>`).join("")}
+        </select>
+      </div>
+      <button class="btn btn-primary" onclick="findSubstitutes()"><i class="fa-solid fa-search"></i> Find Available Faculty</button>
+      <div id="subResult" style="margin-top:20px;"></div>
+    </div>
+  `;
+  document.getElementById("substitutionPage").innerHTML=html;
 }
 
-function findAvailableFaculty(){
-
-const day=
-document.getElementById(
-"subDay"
-).value;
-
-const period=
-document.getElementById(
-"subPeriod"
-).value;
-
-let freeFaculty=
-faculty.filter(f=>{
-
-const busy=
-f.schedules?.some(
-s=>
-s.day===day &&
-s.period===period
-);
-
-return !busy;
-
-});
-
-let html="";
-
-if(freeFaculty.length===0){
-
-html=
-"<div class='card'>No Faculty Available</div>";
-
-}else{
-
-freeFaculty.forEach(f=>{
-
-html+=`
-
-<div class="card">
-
-<b>${f.name}</b>
-
-<br>
-
-${f.dept}
-
-</div>
-
-`;
-
-});
-
+function updateSubDayFromDate(){
+  const dateVal=document.getElementById("subDate").value;
+  if(dateVal){
+    const dayName=new Date(dateVal).toLocaleDateString('en-US',{weekday:'long'});
+    document.getElementById("subDay").value=dayName;
+  }
 }
 
-document.getElementById(
-"subResult"
-).innerHTML=html;
-
-}
-    function exportData(){
-
-const dataStr=
-JSON.stringify(
-faculty,
-null,
-2
-);
-
-const blob=
-new Blob(
-[dataStr],
-{
-type:
-"application/json"
-}
-);
-
-const a=
-document.createElement("a");
-
-a.href=
-URL.createObjectURL(blob);
-
-a.download=
-"SBU_Faculty_Backup.json";
-
-a.click();
-
-}
-
-function importData(file){
-
-const reader=
-new FileReader();
-
-reader.onload=
-function(e){
-
-try{
-
-const data=
-JSON.parse(
-e.target.result
-);
-
-facultyRef.remove();
-
-data.forEach(f=>{
-
-facultyRef.push(f);
-
-});
-
-alert(
-"Backup Imported Successfully"
-);
-
-}catch(err){
-
-alert(
-"Invalid JSON File"
-);
-
+function findSubstitutes(){
+  const facultyId=document.getElementById("subFacultySelect").value;
+  const day=document.getElementById("subDay").value;
+  const period=document.getElementById("subPeriod").value;
+  const date=document.getElementById("subDate").value;
+  
+  if(!facultyId||!day||!period||!date){
+    alert("Please select all fields");
+    return;
+  }
+  
+  const leaveFaculty=faculty.find(f=>f.id===facultyId);
+  const classToSub=leaveFaculty.schedules?.find(s=>s.day===day&&s.period===period);
+  
+  if(!classToSub){
+    document.getElementById("subResult").innerHTML=`<div class="empty-state"><i class="fa-solid fa-circle-info"></i><p>${leaveFaculty.name} has no class at ${period} on ${day}</p></div>`;
+    return;
+  }
+  
+  const freeFaculty=faculty.filter(f=>{
+    if(f.id===facultyId)return false;
+    const busy=f.schedules?.some(s=>s.day===day&&s.period===period);
+    return!busy;
+  });
+  
+  let html=`<div class="card"><h3>Class Details</h3>
+    <p><b>Subject:</b> ${classToSub.subject} | <b>Section:</b> ${classToSub.section} | <b>Room:</b> ${classToSub.room}</p>
+    <p><b>Time:</b> ${day}, ${period} | <b>Date:</b> ${date}</p></div>
+    <div class="card"><h3>Available Faculty (${freeFaculty.length})</h3>`;
+  
+  if(freeFaculty.length===0){
+    html+=`<div class="empty-state"><i class="fa-solid fa-user-slash"></i><p>No faculty available for substitution</p></div>`;
+  }else{
+    freeFaculty.forEach(f=>{
+      html+=`<div class="sub-card">
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
+          <div>
+            <b>${f.name}</b><br>
+            <span style="color:var(--muted);font-size:13px;">${f.dept} | ${f.designation||'Faculty'} | ${f.mobile||'N/A'}</span>
+          </div>
+          <button class="btn btn-success" onclick="assignSubstitute('${facultyId}','${f.id}','${day}','${period}','${date}','${classToSub.subject}','${classToSub.section}','${classToSub.room}')">
+            <i class="fa-solid fa-user-check"></i> Assign
+          </button>
+        </div>
+      </div>`;
+    });
+  }
+  html+=`</div>`;
+  document.getElementById("subResult").innerHTML=html;
 }
 
-};
-
-reader.readAsText(file);
-
+function assignSubstitute(leaveFacultyId,subFacultyId,day,period,date,subject,section,room){
+  const leaveFaculty=faculty.find(f=>f.id===leaveFacultyId);
+  const subFaculty=faculty.find(f=>f.id===subFacultyId);
+  
+  const subData={
+    leaveFacultyId,
+    leaveFacultyName:leaveFaculty.name,
+    leaveFacultyDept:leaveFaculty.dept,
+    leaveFacultyMobile:leaveFaculty.mobile||'',
+    subFacultyId,
+    subFacultyName:subFaculty.name,
+    subFacultyMobile:subFaculty.mobile||'',
+    day,period,date,subject,section,room,
+    assignedAt:new Date().toISOString(),
+    endDateTime:new Date(date+'T'+period.split('-')[1]+':00').toISOString(),
+    status:'active'
+  };
+  
+  substitutionRef.push(subData).then(()=>{
+    showToast(`Assigned: ${subFaculty.name} will take ${subject}`,'success');
+    loadSubstitutions();
+    loadActiveSubstitutions();
+    updateSubAlert();
+    showPage('leave',document.querySelector('.nav-tabs button:nth-child(5)'));
+    setTimeout(()=>populateLeaveForm(subData),300);
+  });
 }
 
-function createImportButton(){
-
-const div=
-document.createElement("div");
-
-div.innerHTML=`
-
-<br>
-
-<input
-type="file"
-accept=".json"
-onchange="
-importData(
-this.files[0]
-)
-">
-
-`;
-
-document.body.appendChild(div);
-
+function loadSubstitutions(){
+  substitutionRef.on("value",snap=>{
+    const data=snap.val();
+    substitutions=data?Object.keys(data).map(id=>({id,...data[id]})):[];
+  });
 }
 
-createImportButton();
-
-window.onclick=
-function(e){
-
-const modal=
-document.getElementById(
-"facultyModal"
-);
-
-if(e.target===modal){
-
-closeModal();
-
-}
-
-};
 function loadActiveSubstitutions(){
-
-const now=new Date();
-
-substitutionRef.on("value",snap=>{
-
-const data=snap.val()||{};
-
-let html=`
-<div class="card">
-<h2>Active Substitutions</h2>
-`;
-
-Object.keys(data).forEach(id=>{
-
-const s=data[id];
-
-const endTime=new Date(
-s.endDateTime
-);
-
-if(endTime>now){
-
-html+=`
-<div style="
-padding:10px;
-margin:10px 0;
-border-left:4px solid #0078d4;
-background:#f8fbff;
-">
-
-<b>${s.period}</b><br>
-
-${s.originalFaculty}
-
-→
-
-${s.subFaculty}
-
-<br>
-
-${s.subject}
-
-|
-
-${s.section}
-
-|
-
-Room ${s.room}
-
-</div>
-`;
-
+  const now=new Date();
+  let html=`<div class="card"><h2><i class="fa-solid fa-bell"></i> Active Substitutions</h2>`;
+  let hasActive=false;
+  
+  substitutions.forEach(s=>{
+    const endTime=new Date(s.endDateTime);
+    if(endTime>now&&s.status==='active'){
+      hasActive=true;
+      const timeLeft=Math.ceil((endTime-now)/(1000*60*60));
+      html+=`<div class="sub-card">
+        <div style="display:flex;justify-content:space-between;align-items:start;gap:10px;flex-wrap:wrap;">
+          <div>
+            <span class="badge badge-warning">${s.period}</span>
+            <b style="margin-left:8px;">${s.subject}</b>
+            <span class="badge badge-success" style="margin-left:8px;">${timeLeft}h left</span><br>
+            <span style="font-size:13px;color:var(--muted);">
+              <i class="fa-solid fa-user-slash"></i> ${s.leaveFacultyName} → <i class="fa-solid fa-user-check"></i> ${s.subFacultyName}<br>
+              ${s.day}, ${s.date} | Section: ${s.section} | Room: ${s.room}
+            </span>
+          </div>
+          <button class="btn btn-danger btn-sm" onclick="cancelSubstitution('${s.id}')"><i class="fa-solid fa-xmark"></i> Cancel</button>
+        </div>
+      </div>`;
+    }
+  });
+  
+  if(!hasActive) html+=`<p style="color:var(--muted);">No active substitutions</p>`;
+  html+="</div>";
+  document.getElementById("activeSubs").innerHTML=html;
 }
 
-});
-
-html+="</div>";
-
-document.getElementById(
-"activeSubs"
-).innerHTML=html;
-
-});
-
+function cancelSubstitution(id){
+  if(confirm("Cancel this substitution?")){
+    substitutionRef.child(id).update({status:'cancelled',cancelledAt:new Date().toISOString()});
+    loadSubstitutions();
+    loadActiveSubstitutions();
+    updateSubAlert();
+    showToast('Substitution cancelled','warning');
+  }
 }
+
 function updateSubAlert(){
-
-const alertBox =
-document.getElementById("subAlert");
-
-if(!alertBox) return;
-
-substitutionRef.on("value",snap=>{
-
-const data=snap.val()||{};
-
-let count=0;
-
-Object.values(data).forEach(sub=>{
-
-if(
-new Date(sub.endDateTime)>
-new Date()
-){
-count++;
+  const alertBox=document.getElementById("subAlert");
+  if(!alertBox) return;
+  const now=new Date();
+  let count=0;
+  substitutions.forEach(sub=>{
+    if(new Date(sub.endDateTime)>now&&sub.status==='active'){count++;}
+  });
+  alertBox.innerHTML=count>0?`🔔 ${count} Active Substitution(s)`:"";
 }
 
-});
-
-alertBox.innerHTML=
-
-count>0
-?
-`🔔 ${count} Active Substitution(s)`
-:
-"";
-
-});
-
+// LEAVE APPLICATION MODULE
+function loadLeavePage(){
+  let html=`<div class="card">
+    <h2><i class="fa-solid fa-file-lines"></i> Generate Leave Application</h2>
+    <p style="color:var(--muted);margin-top:4px;">SBU-HRD-05 Format</p>
+    <div class="row" style="margin-top:20px;">
+      <select id="leaveFacultySelect" onchange="loadLeaveFacultyDetails()">
+        <option value="">Select Faculty</option>
+        ${faculty.map(f=>`<option value="${f.id}">${f.name} - ${f.dept}</option>`).join("")}
+      </select>
+      <input type="date" id="leaveFromDate" placeholder="From Date">
+      <input type="date" id="leaveToDate" placeholder="To Date">
+      <input type="number" id="leaveDays" placeholder="No. of Days" min="1">
+    </div>
+    <div class="row">
+      <input id="leaveAddress" placeholder="Address During Leave">
+      <input id="leaveMobile" placeholder="Mobile No">
+      <select id="leaveType">
+        <option value="">Leave Type</option>
+        <option>Privilege Leave</option>
+        <option>Casual Leave</option>
+        <option>Medical Leave</option>
+      </select>
+    </div>
+    <div class="row">
+      <textarea id="leavePurpose" placeholder="Purpose of Leave" rows="3" style="grid-column:1/-1;"></textarea>
+    </div>
+    <div class="row">
+      <input id="leavePL" type="number" placeholder="P/L Credit" min="0">
+      <input id="leaveCL" type="number" placeholder="C/L Credit" min="0">
+      <input id="leaveSL" type="number" placeholder="S/L Credit" min="0">
+      <input id="joiningDate" type="date" placeholder="To Join On">
+    </div>
+    <h3 style="margin:20px 0 12px 0">Classes During Leave Period (For Substitution)</h3>
+    <div id="leaveClassesContainer"></div>
+    <button class="btn btn-secondary" onclick="addLeaveClassRow()" style="margin-bottom:20px">
+      <i class="fa-solid fa-plus"></i> Add Class for Substitution
+    </button>
+    <hr style="margin:20px 0;border:none;border-top:1px solid var(--border)">
+    <div style="display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap;">
+      <button class="btn btn-warning" onclick="previewLeavePDF()"><i class="fa-solid fa-eye"></i> Preview PDF</button>
+      <button class="btn btn-success" onclick="generateLeavePDF()"><i class="fa-solid fa-file-pdf"></i> Download PDF</button>
+      <button class="btn btn-primary" onclick="saveLeaveApplication()"><i class="fa-solid fa-save"></i> Save Application</button>
+    </div>
+  </div>`;
+  document.getElementById("leavePage").innerHTML=html;
 }
+
+function loadLeaveFacultyDetails(){
+  const fid=document.getElementById("leaveFacultySelect").value;
+  const f=faculty.find(x=>x.id===fid);
+  if(f){
+    document.getElementById("leaveMobile").value=f.mobile||'';
+  }
+}
+
+function populateLeaveForm(subData){
+  document.getElementById("leaveFacultySelect").value=subData.leaveFacultyId;
+  document.getElementById("leaveFromDate").value=subData.date;
+  document.getElementById("leaveToDate").value=subData.date;
+  document.getElementById("leaveDays").value=1;
+  document.getElementById("joiningDate").value=subData.date;
+  loadLeaveFacultyDetails();
+  document.getElementById("leaveClassesContainer").innerHTML='';
+  addLeaveClassRow({
+    date:subData.date,
+    periodTime:subData.period,
+    roomNo:subData.room,
+    class:subData.section,
+    personAssigned:subData.subFacultyName,
+    contactNo:subData.subFacultyMobile
+  });
+}
+
+function addLeaveClassRow(data={}){
+  const id=Date.now()+Math.random();
+  const row=document.createElement("div");
+  row.className="scheduleRow";
+  row.id='leave-'+id;
+  row.innerHTML=`
+    <input type="date" class="leave-date" value="${data.date||''}">
+    <input class="leave-period" placeholder="Period Time" value="${data.periodTime||''}">
+    <input class="leave-room" placeholder="Room No." value="${data.roomNo||''}">
+    <input class="leave-class" placeholder="Class/Section" value="${data.class||''}">
+    <input class="leave-person" placeholder="Person Assigned" value="${data.personAssigned||''}">
+    <button class="btn btn-danger" onclick="document.getElementById('leave-${id}').remove()"><i class="fa-solid fa-xmark"></i></button>
+  `;
+  document.getElementById("leaveClassesContainer").appendChild(row);
+}
+
+function getLeaveFormData(){
+  const fid=document.getElementById("leaveFacultySelect").value;
+  const f=faculty.find(x=>x.id===fid);
+  if(!f){alert("Please select faculty");return null;}
+  
+  const classes=[];
+  document.querySelectorAll("#leaveClassesContainer.scheduleRow").forEach(row=>{
+    classes.push({
+      date:row.querySelector(".leave-date").value,
+      period:row.querySelector(".leave-period").value,
+      room:row.querySelector(".leave-room").value,
+      class:row.querySelector(".leave-class").value,
+      person:row.querySelector(".leave-person").value,
+      contact:''
+    });
+  });
+  
+  return {
+    facultyId:fid,
+    name:f.name,
+    mobile:document.getElementById("leaveMobile").value||f.mobile||'',
+    designation:f.designation||'Faculty',
+    dept:f.dept,
+    empid:f.empid||'',
+    address:document.getElementById("leaveAddress").value,
+    days:document.getElementById("leaveDays").value,
+    from:document.getElementById("leaveFromDate").value,
+    to:document.getElementById("leaveToDate").value,
+    joinOn:document.getElementById("joiningDate").value,
+    purpose:document.getElementById("leavePurpose").value,
+    type:document.getElementById("leaveType").value,
+    pl:document.getElementById("leavePL").value||'0',
+    cl:document.getElementById("leaveCL").value||'0',
+    sl:document.getElementById("leaveSL").value||'0',
+    classes:classes,
+    appliedAt:new Date().toISOString()
+  };
+}
+
+function previewLeavePDF(){
+  const data=getLeaveFormData();
+  if(!data) return;
+  createLeavePDF(data,data.classes,true);
+}
+
+function generateLeavePDF(){
+  const data=getLeaveFormData();
+  if(!data) return;
+  createLeavePDF(data,data.classes,false);
+}
+
+function createLeavePDF(data,classes,isPreview=false){
+  const template=document.getElementById("leaveFormTemplate");
+  template.innerHTML=`
+    <div class="leave-form-pdf" id="pdfContent">
+      <div style="text-align:center;margin-bottom:10px;">
+        <div style="font-size:24pt;font-weight:bold;letter-spacing:2px;">
+          <span style="border:2px solid #000;padding:2px 8px;">S</span>ARALA
+          <span style="border:2px solid #000;padding:2px 8px;">B</span>IRLA
+          <span style="border:2px solid #000;padding:2px 8px;">U</span>NIVERSITY
+        </div>
+      </div>
+      <h2>LEAVE APPLICATION FORM</h2>
+      <div style="text-align:right;font-weight:bold;margin-bottom:20px;">SBU - HRD - 05</div>
+      
+      <div class="form-row">
+        <span class="form-label">Date:</span>
+        <span class="form-value">${new Date().toLocaleDateString('en-GB')}</span>
+      </div>
+      
+      <div class="form-row">
+        <span class="form-label">Name of the Applicant:</span>
+        <span class="form-value">${data.name}</span>
+        <span style="margin-left:20px;">(Mob No):</span>
+        <span class="form-value" style="min-width:150px;">${data.mobile}</span>
+      </div>
+      
+      <div class="form-row">
+        <span class="form-label">Designation:</span>
+        <span class="form-value">${data.designation}</span>
+        <span style="margin-left:20px;">Dept/Branch:</span>
+        <span class="form-value" style="min-width:150px;">${data.dept}</span>
+      </div>
+      
+      <div class="form-row">
+        <span class="form-label">Address During Leave:</span>
+        <span class="form-value">${data.address}</span>
+        <span style="margin-left:20px;">No of Days:</span>
+        <span class="form-value" style="min-width:80px;">${data.days}</span>
+      </div>
+      
+      <div class="form-row">
+        <span class="form-label">Period of Leave: From</span>
+        <span class="form-value">${data.from}</span>
+        <span style="margin-left:20px;">To:</span>
+        <span class="form-value">${data.to}</span>
+      </div>
+      
+      <div class="form-row">
+        <span class="form-label">To Join On:</span>
+        <span class="form-value">${data.joinOn}</span>
+      </div>
+      
+      <div class="form-row">
+        <span class="form-label">Purpose of Leave:</span>
+        <span class="form-value">${data.purpose}</span>
+      </div>
+      
+      <div class="form-row">
+        <span class="form-label">Type of Leave: (Privilege / Casual / Medical):</span>
+        <span class="form-value">${data.type}</span>
+      </div>
+      
+      <div class="form-row">
+        <span class="form-label">Leave at Credit: (P/L</span>
+        <span class="form-value" style="min-width:60px;">${data.pl}</span>
+        <span>C/L</span>
+        <span class="form-value" style="min-width:60px;">${data.cl}</span>
+        <span>S/L</span>
+        <span class="form-value" style="min-width:60px;">${data.sl}</span>
+        <span>)</span>
+      </div>
+      
+      <div style="text-align:center;margin:30px 0 10px 0;font-weight:bold;">Signature of Applicant with date</div>
+      
+      <table>
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Period Time</th>
+            <th>Room No.</th>
+            <th>Class</th>
+            <th>Person assigned</th>
+            <th>Signature</th>
+            <th>Contact No</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${classes.map(c=>`
+            <tr>
+              <td>${c.date}</td>
+              <td>${c.period}</td>
+              <td>${c.room}</td>
+              <td>${c.class}</td>
+              <td>${c.person}</td>
+              <td></td>
+              <td>${c.contact||''}</td>
+            </tr>
+          `).join("")}
+          ${Array(Math.max(0,8-classes.length)).fill(0).map(()=>`
+            <tr><td>&nbsp;</td><td></td><td></td><td></td><td></td></tr>
+          `).join("")}
+        </tbody>
+      </table>
+      
+      <div style="text-align:center;margin:30px 0 10px 0;font-weight:bold;">For office Use</div>
+      
+      <div class="form-row">
+        <span>Mr/Ms/Mrs.</span>
+        <span class="form-value" style="min-width:300px;"></span>
+        <span style="margin-left:20px;">Designation:</span>
+        <span class="form-value" style="min-width:150px;"></span>
+      </div>
+      
+      <div class="form-row">
+        <span>May be / May not be sanctioned Leave.</span>
+      </div>
+      
+      <div style="display:flex;justify-content:space-between;margin-top:60px;">
+        <div>HOD / In charge of the Department</div>
+        <div>Authority of the University</div>
+      </div>
+    </div>
+  `;
+  
+  html2canvas(document.getElementById("pdfContent"),{scale:2}).then(canvas=>{
+    const imgData=canvas.toDataURL('image/png');
+    const pdf=new jsPDF('p','mm','a4');
+    const pdfWidth=pdf.internal.pageSize.getWidth();
+    const pdfHeight=(canvas.height*pdfWidth)/canvas.width;
+    pdf.addImage(imgData,'PNG',0,0,pdfWidth,pdfHeight);
+    
+    if(isPreview){
+      window.open(pdf.output('bloburl'),'_blank');
+    }else{
+      pdf.save(`Leave_Application_${data.name}_${data.from}.pdf`);
+      showToast('PDF Downloaded','success');
+    }
+  });
+}
+
+function saveLeaveApplication(){
+  const data=getLeaveFormData();
+  if(!data) return;
+  leaveRef.push(data).then(()=>{
+    showToast('Leave application saved','success');
+    loadLeaveApplications();
+  });
+}
+
+// HISTORY MODULE
+function loadLeaveApplications(){
+  leaveRef.on("value",snap=>{
+    const data=snap.val();
+    leaveApps=data?Object.keys(data).map(id=>({id,...data[id]})):[];
+  });
+}
+
+function loadHistoryPage(){
+  let html=`<div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+      <h2><i class="fa-solid fa-clock-rotate-left"></i> Substitution History</h2>
+      <button class="btn btn-primary no-print" onclick="window.print()"><i class="fa-solid fa-print"></i> Print</button>
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Period</th>
+          <th>Subject</th>
+          <th>On Leave</th>
+          <th>Substitute</th>
+          <th>Section</th>
+          <th>Room</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>`;
+  
+  const sorted=[...substitutions].sort((a,b)=>new Date(b.date)-new Date(a.date));
+  
+  if(sorted.length===0){
+    html+=`<tr><td colspan="8" style="padding:40px;color:var(--muted);">No substitution history found</td></tr>`;
+  }else{
+    sorted.forEach(s=>{
+      const statusBadge=s.status==='active'
+       ?'<span class="badge badge-success">Active</span>'
+        :s.status==='cancelled'
+       ?'<span class="badge badge-danger">Cancelled</span>'
+        :'<span class="badge badge-warning">Completed</span>';
+      html+=`<tr>
+        <td>${s.date}</td>
+        <td>${s.period}</td>
+        <td><b>${s.subject}</b></td>
+        <td>${s.leaveFacultyName}</td>
+        <td>${s.subFacultyName}</td>
+        <td>${s.section}</td>
+        <td>${s.room}</td>
+        <td>${statusBadge}</td>
+      </tr>`;
+    });
+  }
+  
+  html+=`</tbody></table></div>
+  
+  <div class="card">
+    <h2><i class="fa-solid fa-file-lines"></i> Leave Applications</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Faculty</th>
+          <th>Type</th>
+          <th>From</th>
+          <th>To</th>
+          <th>Days</th>
+          <th>Purpose</th>
+          <th class="no-print">Action</th>
+        </tr>
+      </thead>
+      <tbody>`;
+  
+  const sortedLeave=[...leaveApps].sort((a,b)=>new Date(b.appliedAt)-new Date(a.appliedAt));
+  
+  if(sortedLeave.length===0){
+    html+=`<tr><td colspan="8" style="padding:40px;color:var(--muted);">No leave applications found</td></tr>`;
+  }else{
+    sortedLeave.forEach(l=>{
+      html+=`<tr>
+        <td>${new Date(l.appliedAt).toLocaleDateString()}</td>
+        <td><b>${l.name}</b><br><span style="font-size:12px;color:var(--muted);">${l.dept}</span></td>
+        <td>${l.type}</td>
+        <td>${l.from}</td>
+        <td>${l.to}</td>
+        <td>${l.days}</td>
+        <td>${l.purpose}</td>
+        <td class="no-print"><button class="btn btn-success btn-sm" onclick="reprintLeave('${l.id}')"><i class="fa-solid fa-print"></i></button></td>
+      </tr>`;
+    });
+  }
+  
+  html+=`</tbody></table></div>`;
+  document.getElementById("historyPage").innerHTML=html;
+}
+
+function reprintLeave(id){
+  const app=leaveApps.find(x=>x.id===id);
+  if(app){
+    createLeavePDF(app,app.classes||[],false);
+  }
+}
+
+function exportData(){
+  const dataStr=JSON.stringify({faculty,substitutions,leaveApps},null,2);
+  const blob=new Blob([dataStr],{type:"application/json"});
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(blob);
+  a.download=`SBU_Backup_${new Date().toISOString().split('T')[0]}.json`;
+  a.click();
+  showToast('Backup exported','success');
+}
+
+function showToast(msg,type='success'){
+  const toast=document.createElement('div');
+  toast.style.cssText=`position:fixed;bottom:20px;right:20px;background:white;padding:12px 20px;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,.15);z-index:2000;border-left:4px solid ${type==='success'?'#16a34a':type==='warning'?'#d97706':'#dc2626'};`;
+  toast.innerHTML=`<i class="fa-solid fa-${type==='success'?'check-circle':type==='warning'?'exclamation-triangle':'xmark-circle'}"></i> ${msg}`;
+  document.body.appendChild(toast);
+  setTimeout(()=>toast.remove(),3000);
+}
+
+window.onclick=function(e){
+  const modal=document.getElementById("facultyModal");
+  if(e.target===modal){closeModal();}
+};
+
+// Initialize
 loadDashboard();
-
 </script>
-</div>
 </body>
 </html>
