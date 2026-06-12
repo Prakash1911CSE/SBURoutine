@@ -196,7 +196,13 @@ grid-template-columns:1fr;
 <i class="fa-solid fa-calendar-days"></i>
 SBU Routine Manager
 </div>
-
+<div id="subAlert"
+style="
+font-weight:bold;
+color:#dc2626;
+padding:8px;
+">
+</div>
 <div class="online" id="onlineCount">
 1 Online
 </div>
@@ -250,6 +256,7 @@ Export Backup
 </div>
 </div>
 
+<div id="activeSubs"></div>
 <div id="dashboardPage"></div>
 <div id="todayPage" class="hidden"></div>
 <div id="facultyPage" class="hidden"></div>
@@ -330,7 +337,7 @@ firebase.database()
 .catch(err=>console.error(err));
 const db = firebase.database();
 const facultyRef = db.ref("faculty");
-
+const substitutionRef = db.ref("substitutions");
 const presenceRef=db.ref("presence");
 
 let faculty=[];
@@ -362,8 +369,12 @@ const periods=[
 document.addEventListener(
 "DOMContentLoaded",
 ()=>{
-setupPresence();
-loadFaculty();
+    setupPresence();
+    loadFaculty();
+
+    // New Features
+    loadActiveSubstitutions();
+    updateSubAlert();
 }
 );
 
@@ -1226,7 +1237,108 @@ closeModal();
 }
 
 };
+function loadActiveSubstitutions(){
 
+const now=new Date();
+
+substitutionRef.on("value",snap=>{
+
+const data=snap.val()||{};
+
+let html=`
+<div class="card">
+<h2>Active Substitutions</h2>
+`;
+
+Object.keys(data).forEach(id=>{
+
+const s=data[id];
+
+const endTime=new Date(
+s.endDateTime
+);
+
+if(endTime>now){
+
+html+=`
+<div style="
+padding:10px;
+margin:10px 0;
+border-left:4px solid #0078d4;
+background:#f8fbff;
+">
+
+<b>${s.period}</b><br>
+
+${s.originalFaculty}
+
+→
+
+${s.subFaculty}
+
+<br>
+
+${s.subject}
+
+|
+
+${s.section}
+
+|
+
+Room ${s.room}
+
+</div>
+`;
+
+}
+
+});
+
+html+="</div>";
+
+document.getElementById(
+"activeSubs"
+).innerHTML=html;
+
+});
+
+}
+function updateSubAlert(){
+
+const alertBox =
+document.getElementById("subAlert");
+
+if(!alertBox) return;
+
+substitutionRef.on("value",snap=>{
+
+const data=snap.val()||{};
+
+let count=0;
+
+Object.values(data).forEach(sub=>{
+
+if(
+new Date(sub.endDateTime)>
+new Date()
+){
+count++;
+}
+
+});
+
+alertBox.innerHTML=
+
+count>0
+?
+`🔔 ${count} Active Substitution(s)`
+:
+"";
+
+});
+
+}
 loadDashboard();
 
 </script>
