@@ -1,800 +1,1237 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SBU Routine Manager</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <style>
-        :root {
-            --bg-primary: #0f172a;
-            --bg-secondary: #1e293b;
-            --bg-tertiary: #334155;
-            --accent: #3b82f6;
-            --accent-hover: #2563eb;
-            --success: #10b981;
-            --danger: #ef4444;
-            --warning: #f59e0b;
-            --text-primary: #f1f5f9;
-            --text-secondary: #94a3b8;
-            --border: #334155;
-        }
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: var(--bg-primary);
-            color: var(--text-primary);
-            display: flex;
-            height: 100vh;
-            overflow: hidden;
-        }
-       .sidebar {
-            width: 280px;
-            background: var(--bg-secondary);
-            border-right: 1px solid var(--border);
-            display: flex;
-            flex-direction: column;
-            overflow-y: auto;
-        }
-       .sidebar-header {
-            padding: 20px;
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-       .sidebar-header h2 {
-            font-size: 18px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-       .live-badge {
-            background: var(--danger);
-            color: white;
-            padding: 2px 8px;
-            border-radius: 4px;
-            font-size: 10px;
-            font-weight: 600;
-        }
-       .online-status {
-            padding: 8px 20px;
-            font-size: 12px;
-            color: var(--success);
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-       .faculty-selector {
-            padding: 16px 20px;
-            border-bottom: 1px solid var(--border);
-        }
-       .faculty-selector label {
-            display: block;
-            font-size: 11px;
-            color: var(--text-secondary);
-            margin-bottom: 6px;
-            text-transform: uppercase;
-            font-weight: 600;
-        }
-       .faculty-selector select {
-            width: 100%;
-            padding: 10px;
-            background: var(--bg-tertiary);
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            color: var(--text-primary);
-            font-size: 14px;
-        }
-       .nav-menu {
-            padding: 12px;
-            flex: 1;
-        }
-       .nav-item {
-            padding: 12px 16px;
-            margin: 4px 0;
-            border-radius: 6px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            transition: all 0.2s;
-            font-size: 14px;
-        }
-       .nav-item:hover { background: var(--bg-tertiary); }
-       .nav-item.active { background: var(--accent); }
-       .main-content {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-        }
-       .top-bar {
-            padding: 16px 24px;
-            background: var(--bg-secondary);
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-       .action-buttons { display: flex; gap: 8px; }
-       .btn {
-            padding: 8px 16px;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 13px;
-            font-weight: 500;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            transition: all 0.2s;
-        }
-       .btn-primary { background: var(--accent); color: white; }
-       .btn-primary:hover { background: var(--accent-hover); }
-       .btn-success { background: var(--success); color: white; }
-       .btn-danger { background: var(--danger); color: white; }
-       .btn-secondary { background: var(--bg-tertiary); color: var(--text-primary); }
-       .content-area {
-            flex: 1;
-            padding: 24px;
-            overflow-y: auto;
-        }
-       .card {
-            background: var(--bg-secondary);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 20px;
-            margin-bottom: 16px;
-        }
-       .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 16px;
-            margin-bottom: 24px;
-        }
-       .stat-card {
-            background: var(--bg-secondary);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 20px;
-        }
-       .stat-card h3 {
-            font-size: 12px;
-            color: var(--text-secondary);
-            margin-bottom: 8px;
-            text-transform: uppercase;
-        }
-       .stat-card.value {
-            font-size: 28px;
-            font-weight: 700;
-            color: var(--accent);
-        }
-       .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.7);
-            z-index: 1000;
-            align-items: center;
-            justify-content: center;
-        }
-       .modal.active { display: flex; }
-       .modal-content {
-            background: var(--bg-secondary);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            width: 90%;
-            max-width: 700px;
-            max-height: 90vh;
-            overflow-y: auto;
-        }
-       .modal-header {
-            padding: 20px;
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-       .modal-body { padding: 20px; }
-       .form-group { margin-bottom: 16px; }
-       .form-group label {
-            display: block;
-            margin-bottom: 6px;
-            font-size: 13px;
-            color: var(--text-secondary);
-        }
-       .form-group input,.form-group select {
-            width: 100%;
-            padding: 10px;
-            background: var(--bg-tertiary);
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            color: var(--text-primary);
-            font-size: 14px;
-        }
-       .schedule-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1.5fr 1fr 1fr 80px 40px;
-            gap: 8px;
-            margin-bottom: 8px;
-            align-items: center;
-        }
-       .schedule-row input,.schedule-row select {
-            padding: 8px;
-            background: var(--bg-tertiary);
-            border: 1px solid var(--border);
-            border-radius: 4px;
-            color: var(--text-primary);
-            font-size: 13px;
-        }
-       .toast {
-            position: fixed;
-            bottom: 24px;
-            right: 24px;
-            background: var(--bg-tertiary);
-            border: 1px solid var(--border);
-            padding: 12px 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-            display: none;
-            z-index: 2000;
-        }
-       .toast.show { display: block; animation: slideIn 0.3s; }
-       .toast.success { border-left: 4px solid var(--success); }
-       .toast.danger { border-left: 4px solid var(--danger); }
-       .toast.warning { border-left: 4px solid var(--warning); }
-        @keyframes slideIn {
-            from { transform: translateX(400px); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
-        }
-       .empty-state {
-            text-align: center;
-            padding: 60px 20px;
-            color: var(--text-secondary);
-        }
-       .empty-state i {
-            font-size: 48px;
-            margin-bottom: 16px;
-            opacity: 0.5;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        th, td {
-            padding: 12px;
-            text-align: left;
-            border-bottom: 1px solid var(--border);
-        }
-        th {
-            font-size: 12px;
-            color: var(--text-secondary);
-            text-transform: uppercase;
-            font-weight: 600;
-        }
-       .reminder-banner {
-            background: var(--warning);
-            color: #000;
-            padding: 12px 24px;
-            display: none;
-            align-items: center;
-            justify-content: space-between;
-        }
-       .reminder-banner.show { display: flex; }
-       .faculty-info h4 { margin-bottom: 8px; }
-       .faculty-meta {
-            display: flex;
-            gap: 16px;
-            font-size: 13px;
-            color: var(--text-secondary);
-            flex-wrap: wrap;
-        }
-       .faculty-meta span { display: flex; align-items: center; gap: 4px; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SBU Routine Manager</title>
+
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+<style>
+
+:root{
+--bg:#f3f6fb;
+--card:#ffffff;
+--primary:#0078d4;
+--primary2:#106ebe;
+--border:#d8dde6;
+--text:#1f1f1f;
+--muted:#666;
+--success:#16a34a;
+--danger:#dc2626;
+}
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:'Segoe UI',sans-serif;
+}
+
+body{
+background:var(--bg);
+color:var(--text);
+}
+
+.topbar{
+background:white;
+padding:15px 25px;
+display:flex;
+justify-content:space-between;
+align-items:center;
+border-bottom:1px solid var(--border);
+position:sticky;
+top:0;
+z-index:100;
+}
+
+.logo{
+font-size:22px;
+font-weight:600;
+color:var(--primary);
+}
+
+.online{
+font-size:14px;
+color:var(--success);
+font-weight:600;
+}
+
+.nav{
+display:flex;
+gap:10px;
+padding:15px;
+background:white;
+border-bottom:1px solid var(--border);
+flex-wrap:wrap;
+}
+
+.nav button{
+padding:10px 18px;
+border:none;
+background:#eef4ff;
+cursor:pointer;
+border-radius:8px;
+font-weight:600;
+}
+
+.nav button.active{
+background:var(--primary);
+color:white;
+}
+
+.container{
+padding:20px;
+}
+
+.card{
+background:var(--card);
+border:1px solid var(--border);
+border-radius:12px;
+padding:20px;
+margin-bottom:20px;
+box-shadow:0 2px 8px rgba(0,0,0,.05);
+}
+
+.row{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+gap:15px;
+margin-bottom:15px;
+}
+
+input,select{
+width:100%;
+padding:10px;
+border:1px solid var(--border);
+border-radius:8px;
+}
+
+.btn{
+padding:10px 18px;
+border:none;
+border-radius:8px;
+cursor:pointer;
+font-weight:600;
+}
+
+.btn-primary{
+background:var(--primary);
+color:white;
+}
+
+.btn-danger{
+background:var(--danger);
+color:white;
+}
+
+.btn-success{
+background:var(--success);
+color:white;
+}
+
+table{
+width:100%;
+border-collapse:collapse;
+}
+
+th,td{
+border:1px solid var(--border);
+padding:10px;
+text-align:center;
+}
+
+th{
+background:#eef4ff;
+}
+
+.hidden{
+display:none;
+}
+
+.modal{
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,.5);
+display:none;
+justify-content:center;
+align-items:center;
+}
+
+.modal-content{
+background:white;
+width:95%;
+max-width:900px;
+padding:20px;
+border-radius:12px;
+max-height:90vh;
+overflow:auto;
+}
+
+.scheduleRow{
+display:grid;
+grid-template-columns:
+1fr 1fr 1fr 1fr 1fr auto;
+gap:10px;
+margin-bottom:10px;
+}
+
+@media(max-width:768px){
+.scheduleRow{
+grid-template-columns:1fr;
+}
+}
+
+</style>
 </head>
+
 <body>
-    <div class="sidebar">
-        <div class="sidebar-header">
-            <h2><i class="fa-solid fa-calendar-days"></i> SBU Routine Manager</h2>
-            <span class="live-badge">LIVE</span>
-        </div>
-        <div class="online-status">
-            <i class="fa-solid fa-circle" style="font-size: 8px;"></i> 1 online
-        </div>
-        <div class="faculty-selector">
-            <label>Select Faculty</label>
-            <select id="facultySelect" onchange="selectFaculty(this.value)">
-                <option value="">Loading...</option>
-            </select>
-        </div>
-        <div class="faculty-selector">
-            <label>Filter Department</label>
-            <select id="deptFilter" onchange="filterByDept()">
-                <option value="all">All Departments</option>
-            </select>
-        </div>
-        <div class="nav-menu">
-            <div class="nav-item active" onclick="switchTab('dashboard')">
-                <i class="fa-solid fa-gauge"></i> Dashboard
-            </div>
-            <div class="nav-item" onclick="switchTab('today')">
-                <i class="fa-solid fa-calendar-day"></i> Today's Classes
-            </div>
-            <div class="nav-item" onclick="switchTab('weekly')">
-                <i class="fa-solid fa-calendar-week"></i> Weekly Schedule
-            </div>
-            <div class="nav-item" onclick="switchTab('substitute')">
-                <i class="fa-solid fa-people-arrows"></i> Substitution
-            </div>
-            <div class="nav-item" onclick="switchTab('manage')">
-                <i class="fa-solid fa-users-gear"></i> Manage Faculty
-            </div>
-        </div>
-    </div>
 
-    <div class="main-content">
-        <div class="reminder-banner" id="reminderBanner">
-            <span id="reminderText"></span>
-            <button class="btn btn-secondary" onclick="closeReminder()">Dismiss</button>
-        </div>
-        <div class="top-bar">
-            <h3 id="pageTitle">Dashboard</h3>
-            <div class="action-buttons">
-                <button class="btn btn-success" onclick="openFacultyModal()">
-                    <i class="fa-solid fa-plus"></i> Add Faculty
-                </button>
-                <button class="btn btn-secondary" onclick="exportData()">
-                    <i class="fa-solid fa-download"></i> Export
-                </button>
-                <button class="btn btn-secondary" onclick="importData()">
-                    <i class="fa-solid fa-upload"></i> Import
-                </button>
-                <input type="file" id="importFile" accept=".json" style="display:none" onchange="handleImport(event)">
-            </div>
-        </div>
-        <div class="content-area" id="contentArea">
-            <div class="empty-state">
-                <i class="fa-solid fa-spinner fa-spin"></i>
-                <p>Connecting to Firebase...</p>
-            </div>
-        </div>
-    </div>
+<div class="topbar">
+<div class="logo">
+<i class="fa-solid fa-calendar-days"></i>
+SBU Routine Manager
+</div>
 
-    <div class="modal" id="facultyModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 id="modalTitle">Add Faculty</h3>
-                <button class="btn btn-secondary" onclick="closeFacultyModal()">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
-            </div>
-            <div class="modal-body">
-                <form id="facultyForm" onsubmit="event.preventDefault(); saveFaculty();">
-                    <div class="form-group">
-                        <label>Faculty Name *</label>
-                        <input type="text" id="facultyName" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Department *</label>
-                        <input type="text" id="facultyDept" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Employee ID</label>
-                        <input type="text" id="facultyEmpId">
-                    </div>
-                    <div class="form-group">
-                        <label>Email</label>
-                        <input type="email" id="facultyEmail">
-                    </div>
-                    <div class="form-group">
-                        <label>Weekly Schedule</label>
-                        <div id="scheduleContainer"></div>
-                        <button type="button" class="btn btn-secondary" onclick="addScheduleRow()" style="margin-top: 8px;">
-                            <i class="fa-solid fa-plus"></i> Add Class
-                        </button>
-                    </div>
-                    <div style="display: flex; gap: 8px; justify-content: flex-end; margin-top: 20px;">
-                        <button type="button" class="btn btn-secondary" onclick="closeFacultyModal()">Cancel</button>
-                        <button type="submit" class="btn btn-primary">Save Faculty</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
+<div class="online" id="onlineCount">
+1 Online
+</div>
+</div>
 
-    <div class="toast" id="toast"></div>
+<div class="nav">
+<button class="active" onclick="showPage('dashboard',this)">
+Dashboard
+</button>
 
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-    <script>
-        // PASTE YOUR FIREBASE CONFIG HERE
-        const firebaseConfig = {
-            apiKey: "YOUR_API_KEY",
-            authDomain: "YOUR_AUTH_DOMAIN",
-            projectId: "YOUR_PROJECT_ID",
-            storageBucket: "YOUR_STORAGE_BUCKET",
-            messagingSenderId: "YOUR_SENDER_ID",
-            appId: "YOUR_APP_ID"
-        };
+<button onclick="showPage('today',this)">
+Today's Classes
+</button>
 
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
+<button onclick="showPage('faculty',this)">
+Faculty
+</button>
 
-        let faculty = [];
-        let currentFacultyId = null;
-        let currentTab = 'dashboard';
-        let editId = null;
+<button onclick="showPage('substitution',this)">
+Substitution
+</button>
+</div>
 
-        const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-        const periods = ['09:00-10:00', '10:00-11:00', '11:00-12:00', '12:00-13:00', '14:00-15:00', '15:00-16:00', '16:00-17:00'];
+<div class="container">
 
-        function switchTab(tab) {
-            currentTab = tab;
-            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
-            event?.target.closest('.nav-item')?.classList.add('active');
-            
-            const titles = {
-                dashboard: 'Dashboard',
-                today: "Today's Classes",
-                weekly: 'Weekly Schedule',
-                substitute: 'Substitution Manager',
-                manage: 'Manage Faculty'
-            };
-            document.getElementById('pageTitle').textContent = titles[tab];
+<div class="card">
+<div class="row">
 
-            if (faculty.length === 0) {
-                document.getElementById('contentArea').innerHTML = `
-                    <div class="empty-state">
-                        <i class="fa-solid fa-users-slash"></i>
-                        <p>No faculty data found</p>
-                        <p style="font-size: 13px; margin-top: 8px;">Click "Add Faculty" to get started</p>
-                    </div>
-                `;
-                return;
-            }
+<select id="facultySelect"
+onchange="loadDashboard()">
+<option>Select Faculty</option>
+</select>
 
-            const html = {
-                dashboard: getDashboardHTML(),
-                today: getTodayHTML(),
-                weekly: getWeeklyHTML(),
-                substitute: getSubstitutionHTML(),
-                manage: getManageHTML()
-            };
-            document.getElementById('contentArea').innerHTML = html[tab];
-        }
+<select id="deptFilter"
+onchange="filterDepartment()">
+<option value="">
+All Departments
+</option>
+</select>
 
-        function selectFaculty(id) {
-            currentFacultyId = id;
-            switchTab(currentTab);
-            checkReminders();
-        }
+<button class="btn btn-primary"
+onclick="openModal()">
+Add Faculty
+</button>
 
-        function renderFacultyList() {
-            const select = document.getElementById('facultySelect');
-            const deptFilter = document.getElementById('deptFilter').value;
-            
-            const filtered = deptFilter === 'all'? faculty : faculty.filter(f => f.dept === deptFilter);
-            
-            select.innerHTML = filtered.length === 0 
-               ? '<option value="">No faculty found</option>'
-                : filtered.map(f => `<option value="${f.id}" ${f.id === currentFacultyId? 'selected' : ''}>${f.name}</option>`).join('');
-            
-            const depts = [...new Set(faculty.map(f => f.dept))];
-            const deptSelect = document.getElementById('deptFilter');
-            const currentDept = deptSelect.value;
-            deptSelect.innerHTML = '<option value="all">All Departments</option>' + 
-                depts.map(d => `<option value="${d}" ${d === currentDept? 'selected' : ''}>${d}</option>`).join('');
-        }
+<button class="btn btn-success"
+onclick="exportData()">
+Export Backup
+</button>
 
-        function filterByDept() {
-            renderFacultyList();
-        }
+</div>
+</div>
 
-        function getDashboardHTML() {
-            const f = faculty.find(f => f.id === currentFacultyId);
-            if (!f) return '<div class="empty-state"><i class="fa-solid fa-user-slash"></i><p>Select a faculty member</p></div>';
+<div id="dashboardPage"></div>
+<div id="todayPage" class="hidden"></div>
+<div id="facultyPage" class="hidden"></div>
+<div id="substitutionPage" class="hidden"></div>
 
-            const totalClasses = f.schedules?.length || 0;
-            const today = new Date().toLocaleDateString('en-US', { weekday: 'long' });
-            const todayClasses = f.schedules?.filter(s => s.day === today).length || 0;
-            const subjects = [...new Set(f.schedules?.map(s => s.subject) || [])].length;
+</div>
+<!-- MODAL -->
 
-            return `
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <h3>Total Classes/Week</h3>
-                        <div class="value">${totalClasses}</div>
-                    </div>
-                    <div class="stat-card">
-                        <h3>Today's Classes</h3>
-                        <div class="value">${todayClasses}</div>
-                    </div>
-                    <div class="stat-card">
-                        <h3>Subjects Taught</h3>
-                        <div class="value">${subjects}</div>
-                    </div>
-                    <div class="stat-card">
-                        <h3>Department</h3>
-                        <div class="value" style="font-size: 18px;">${f.dept}</div>
-                    </div>
-                </div>
-                <div class="card">
-                    <h3 style="margin-bottom: 16px;">Faculty Details</h3>
-                    <div class="faculty-meta">
-                        <span><i class="fa-solid fa-user"></i> ${f.name}</span>
-                        <span><i class="fa-solid fa-id-badge"></i> ${f.empid || 'N/A'}</span>
-                        <span><i class="fa-solid fa-envelope"></i> ${f.email || 'N/A'}</span>
-                    </div>
-                </div>
-            `;
-        }
+<div class="modal" id="facultyModal">
+<div class="modal-content">
 
-        function getTodayHTML() {
-            const f = faculty.find(f => f.id === currentFacultyId);
-            if (!f) return '<div class="empty-state"><i class="fa-solid fa-user-slash"></i><p>Select a faculty member</p></div>';
+<h2 style="margin-bottom:15px">
+Faculty Details
+</h2>
 
-            const today = new Date().toLocaleDateString('en-US', { weekday: 'long' });
-            const todayClasses = f.schedules?.filter(s => s.day === today).sort((a,b) => a.period.localeCompare(b.period)) || [];
+<div class="row">
+<input id="name" placeholder="Faculty Name">
+<input id="dept" placeholder="Department">
+<input id="empid" placeholder="Employee ID">
+<input id="email" placeholder="Email">
+</div>
 
-            if (todayClasses.length === 0) {
-                return `<div class="empty-state"><i class="fa-solid fa-calendar-xmark"></i><p>No classes scheduled for ${today}</p></div>`;
-            }
+<h3 style="margin:15px 0">
+Weekly Schedule
+</h3>
 
-            return `
-                <div class="card">
-                    <h3 style="margin-bottom: 16px;">${today}'s Schedule</h3>
-                    <table>
-                        <thead>
-                            <tr><th>Time</th><th>Subject</th><th>Room</th><th>Section</th><th>Semester</th></tr>
-                        </thead>
-                        <tbody>
-                            ${todayClasses.map(c => `
-                                <tr>
-                                    <td>${c.period}</td>
-                                    <td>${c.subject}</td>
-                                    <td>${c.room || '-'}</td>
-                                    <td>${c.section || '-'}</td>
-                                    <td>${c.semester || '-'}</td>
-                                </tr>
-                            `).join('')}
-                        </tbody>
-                    </table>
-                </div>
-            `;
-        }
+<div id="scheduleContainer"></div>
 
-        function getWeeklyHTML() {
-            const f = faculty.find(f => f.id === currentFacultyId);
-            if (!f) return '<div class="empty-state"><i class="fa-solid fa-user-slash"></i><p>Select a faculty member</p></div>';
+<button class="btn btn-success"
+onclick="addScheduleRow()">
+Add Schedule
+</button>
 
-            const schedule = f.schedules || [];
-            if (schedule.length === 0) {
-                return `<div class="empty-state"><i class="fa-solid fa-calendar-plus"></i><p>No schedule added yet</p></div>`;
-            }
+<hr style="margin:20px 0">
 
-            let html = '<div class="card"><h3 style="margin-bottom: 16px;">Weekly Timetable</h3><div style="overflow-x: auto;"><table><thead><tr><th>Time</th>';
-            days.forEach(d => html += `<th>${d}</th>`);
-            html += '</tr></thead><tbody>';
+<button class="btn btn-primary"
+onclick="saveFaculty()">
+Save Faculty
+</button>
 
-            periods.forEach(p => {
-                html += `<tr><td><strong>${p}</strong></td>`;
-                days.forEach(d => {
-                    const cls = schedule.find(s => s.day === d && s.period === p);
-                    html += `<td>${cls? `<div style="font-size: 12px;"><strong>${cls.subject}</strong><br>${cls.room || ''}<br><span style="color: var(--text-secondary);">${cls.section || ''}</span></div>` : '-'}</td>`;
-                });
-                html += '</tr>';
-            });
+<button class="btn btn-danger"
+onclick="closeModal()">
+Close
+</button>
 
-            html += '</tbody></table></div></div>';
-            return html;
-        }
+</div>
+</div>
 
-        function getSubstitutionHTML() {
-            return `
-                <div class="card">
-                    <h3 style="margin-bottom: 16px;">Find Substitute Faculty</h3>
-                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-bottom: 16px;">
-                        <div class="form-group">
-                            <label>Faculty on Leave</label>
-                            <select id="subFaculty" onchange="findAvailableFaculty()">
-                                <option value="">Select Faculty</option>
-                                ${faculty.map(f => `<option value="${f.id}">${f.name}</option>`).join('')}
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label>Day</label>
-                            <select id="subDay" onchange="findAvailableFaculty()">
-                                <option value="">Select Day</option>
-                                ${days.map(d => `<option value="${d}">${d}</option>`).join('')}
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label>Period</label>
-                            <select id="subPeriod" onchange="findAvailableFaculty()">
-                                <option value="">Select Period</option>
-                                ${periods.map(p => `<option value="${p}">${p}</option>`).join('')}
-                            </select>
-                        </div>
-                    </div>
-                    <div id="availableSubs"></div>
-                </div>
-            `;
-        }
+<!-- FIREBASE -->
 
-        function getManageHTML() {
-            let html = `
-                <div class="page-header" style="margin-bottom: 16px;">
-                    <h3>Faculty Management</h3>
-                    <p style="color: var(--text-secondary); font-size: 13px;">Total ${faculty.length} faculty members</p>
-                </div>
-            `;
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
 
-            if (faculty.length === 0) {
-                html += '<div class="empty-state"><i class="fa-solid fa-users-slash"></i><p>No faculty added yet. Click "Add Faculty" to start.</p></div>';
-            } else {
-                faculty.forEach(f => {
-                    html += `
-                        <div class="card">
-                            <div style="display: flex; justify-content: space-between; align-items: start;">
-                                <div class="faculty-info">
-                                    <h4>${f.name}</h4>
-                                    <div class="faculty-meta">
-                                        <span><i class="fa-solid fa-building-columns"></i> ${f.dept}</span>
-                                        <span><i class="fa-solid fa-id-badge"></i> ${f.empid || 'N/A'}</span>
-                                        <span><i class="fa-solid fa-envelope"></i> ${f.email || 'N/A'}</span>
-                                        <span><i class="fa-solid fa-calendar-week"></i> ${f.schedules?.length || 0} classes/week</span>
-                                    </div>
-                                </div>
-                                <div class="action-buttons">
-                                    <button class="btn btn-primary" onclick="editFaculty('${f.id}')">
-                                        <i class="fa-solid fa-edit"></i> Edit
-                                    </button>
-                                    <button class="btn btn-danger" onclick="deleteFaculty('${f.id}')">
-                                        <i class="fa-solid fa-trash"></i> Delete
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                });
-            }
-            return html;
-        }
+<script>
 
-        function checkReminders() {
-            const f = faculty.find(f => f.id === currentFacultyId);
-            if (!f ||!f.schedules) return;
+/* REPLACE WITH YOUR FIREBASE */
 
-            const now = new Date();
-            const currentDay = now.toLocaleDateString('en-US', { weekday: 'long' });
-            const currentTime = now.getHours() * 60 + now.getMinutes();
+const firebaseConfig = {
 
-            const nextClass = f.schedules
-               .filter(s => s.day === currentDay)
-               .map(s => {
-                    const [start] = s.period.split('-');
-                    const [h, m] = start.split(':').map(Number);
-                    return {...s, minutes: h * 60 + m };
-                })
-               .filter(s => s.minutes > currentTime)
-               .sort((a, b) => a.minutes - b.minutes)[0];
+apiKey:"YOUR_API_KEY",
 
-            const banner = document.getElementById('reminderBanner');
-            const text = document.getElementById('reminderText');
+authDomain:"YOUR_PROJECT.firebaseapp.com",
 
-            if (nextClass && nextClass.minutes - currentTime <= 15) {
-                const minsLeft = nextClass.minutes - currentTime;
-                text.innerHTML = `<i class="fa-solid fa-bell"></i> <strong>Reminder:</strong> ${nextClass.subject} starts in ${minsLeft} minute${minsLeft!== 1? 's' : ''} at ${nextClass.room || 'TBA'}`;
-                banner.classList.add('show');
-            } else {
-                banner.classList.remove('show');
-            }
-        }
+databaseURL:
+"https://YOUR_PROJECT-default-rtdb.firebaseio.com",
 
-        function closeReminder() {
-            document.getElementById('reminderBanner').classList.remove('show');
-        }
+projectId:"YOUR_PROJECT",
 
-        function findAvailableFaculty() {
-            const day = document.getElementById('subDay').value;
-            const period = document.getElementById('subPeriod').value;
-            const selectedFacultyId = document.getElementById('subFaculty').value;
-            const container = document.getElementById('availableSubs');
+storageBucket:
+"YOUR_PROJECT.appspot.com",
 
-            if (!day ||!period ||!selectedFacultyId) {
-                container.innerHTML = '<p style="color: var(--text-secondary); font-size: 13px;">Select faculty, day and period to see available substitutes</p>';
-                return;
-            }
+messagingSenderId:"123456",
 
-            const selectedFaculty = faculty.find(f => f.id === selectedFacultyId);
-            const classInfo = selectedFaculty?.schedules?.find(s => s.day === day && s.period === period);
+appId:"APP_ID"
 
-            if (!classInfo) {
-                container.innerHTML = '<p style="color: var(--warning); font-size: 13px;"><i class="fa-solid fa-circle-info"></i> Selected faculty has no class at this time</p>';
-                return;
-            }
+};
 
-            const available = faculty.filter(f => {
-                if (f.id === selectedFacultyId) return false;
-                const hasClass = f.schedules?.some(s => s.day === day && s.period === period);
-                return!hasClass;
-            });
+firebase.initializeApp(firebaseConfig);
 
-            if (available.length === 0) {
-                container.innerHTML = '<p style="color: var(--danger); font-size: 13px;"><i class="fa-solid fa-triangle-exclamation"></i> No faculty available for substitution</p>';
-            } else {
-                let html = `<p style="margin-bottom: 8px; font-size: 13px; color: var(--success);"><i class="fa-solid fa-check-circle"></i> Found ${available.length} available faculty for ${classInfo.subject}</p><div style="display: flex; flex-wrap: wrap; gap: 8px;">`;
-                available.forEach(f => {
-                    html += `
-                        <button class="btn btn-success" onclick="assignSubstitute('${selectedFacultyId}', '${f.id}', '${day}', '${period}', '${classInfo.subject}')">
-                            <i class="fa-solid fa-user-check"></i> ${f.name}
-                        </button>
-                    `;
-                });
-                html += '</div>';
-                container.innerHTML = html;
-            }
-        }
+const db=firebase.database();
 
-        function assignSubstitute(origId, subId, day, period, subject) {
-            const original = faculty.find(f => f.id === origId);
-            const substitute = faculty.find(f => f.id === subId);
-            
-            if (confirm(`Assign ${substitute.name} to substitute for ${original.name}'s ${subject} class on ${day} at ${period}?`)) {
-                showToast(`Substitution assigned: ${substitute.name} will take ${subject}`, 'success');
-                document.getElementById('subFaculty').value = '';
-                document.getElementById('subDay').value = '';
-                document.getElementById('subPeriod').value = '';
-                document.getElementById('availableSubs').innerHTML = '';
-            }
-        }
+const facultyRef=db.ref("faculty");
 
-        function openFacultyModal(facultyId = null) {
-            editId = facultyId;
-            const modal = document.getElementById('facultyModal');
-            const title = document.getElementById('modalTitle');
-            const scheduleContainer = document.getElementById('scheduleContainer');
-            
-            if (facultyId) {
-                const f = faculty.find(f => f.id === facultyId);
-                title.textContent = 'Edit Faculty';
-                document.getElementById('facultyName').value = f.name;
-                document.getElementById('facultyDept').value = f.dept;
-                document.getElementById('facultyEmpId').value = f.empid || '';
-                document.getElementById('facultyEmail').value = f.email || '';
-                
-                scheduleContainer.innerHTML = '';
-                if (f.schedules && f.schedules.length > 0) {
-                    f.schedules.forEach(s => addScheduleRow(s));
-                } else {
-                    addScheduleRow();
-                }
-            } else {
-                title.textContent = 'Add Faculty';
-                document.getElementById('facultyForm').reset();
-                scheduleContainer.innerHTML = '';
-                addScheduleRow();
-            }
-            
-            modal.classList.add('active');
-        }
+const presenceRef=db.ref("presence");
 
-        function closeFacultyModal() {
-            document.getElementById('facultyModal').classList.remove('active');
-            editId = null;
-        }
+let faculty=[];
 
-        function addScheduleRow(data = {}) {
-            const container = document.getElementById('scheduleContainer');
-            const rowId = Date.now() + Math.random();
-            const row = document.createElement('div');
-            row.className = 'schedule-row';
-            row.id = `row-${rowId}`;
-            row.innerHTML = `
-                <select class="schedule-day">
-                    <option value="">Day</option>
-                    ${days.map(d => `<option value="${d}" ${data.day === d? 'selected' : ''}>${d}</option>`
+let currentFacultyId="";
+
+let editId=null;
+
+const days=[
+"Monday",
+"Tuesday",
+"Wednesday",
+"Thursday",
+"Friday",
+"Saturday"
+];
+
+const periods=[
+"09:00-10:00",
+"10:00-11:00",
+"11:00-12:00",
+"12:00-13:00",
+"13:00-14:00",
+"14:00-15:00",
+"15:00-16:00",
+"16:00-17:00"
+];
+
+document.addEventListener(
+"DOMContentLoaded",
+()=>{
+setupPresence();
+loadFaculty();
+}
+);
+
+function setupPresence(){
+
+const user=presenceRef.push();
+
+user.set(true);
+
+user.onDisconnect().remove();
+
+presenceRef.on(
+"value",
+snap=>{
+document.getElementById(
+"onlineCount"
+).innerText=
+snap.numChildren()+" Online";
+}
+);
+
+}
+
+function showPage(page,btn){
+
+document
+.querySelectorAll(".nav button")
+.forEach(b=>b.classList.remove("active"));
+
+btn.classList.add("active");
+
+document
+.getElementById("dashboardPage")
+.classList.add("hidden");
+
+document
+.getElementById("todayPage")
+.classList.add("hidden");
+
+document
+.getElementById("facultyPage")
+.classList.add("hidden");
+
+document
+.getElementById("substitutionPage")
+.classList.add("hidden");
+
+document
+.getElementById(page+"Page")
+.classList.remove("hidden");
+
+if(page==="dashboard")
+loadDashboard();
+
+if(page==="today")
+loadToday();
+
+if(page==="faculty")
+loadFacultyPage();
+
+if(page==="substitution")
+loadSubstitution();
+
+}
+
+function openModal(){
+
+editId=null;
+
+document
+.getElementById("facultyModal")
+.style.display="flex";
+
+document.getElementById("name").value="";
+document.getElementById("dept").value="";
+document.getElementById("empid").value="";
+document.getElementById("email").value="";
+
+document
+.getElementById("scheduleContainer")
+.innerHTML="";
+
+addScheduleRow();
+
+}
+
+function closeModal(){
+
+document
+.getElementById("facultyModal")
+.style.display="none";
+
+}
+function addScheduleRow(data={}){
+
+const id=Date.now()+Math.random();
+
+const row=document.createElement("div");
+
+row.className="scheduleRow";
+
+row.id=id;
+
+row.innerHTML=`
+
+<select class="day">
+
+<option value="">Day</option>
+
+${days.map(d=>
+`<option ${data.day===d?'selected':''}>
+${d}
+</option>`
+).join("")}
+
+</select>
+
+<select class="period">
+
+<option value="">Period</option>
+
+${periods.map(p=>
+`<option ${data.period===p?'selected':''}>
+${p}
+</option>`
+).join("")}
+
+</select>
+
+<input class="subject"
+placeholder="Subject"
+value="${data.subject||''}">
+
+<input class="room"
+placeholder="Room"
+value="${data.room||''}">
+
+<input class="section"
+placeholder="Section"
+value="${data.section||''}">
+
+<button class="btn btn-danger"
+onclick="removeSchedule('${id}')">
+X
+</button>
+
+`;
+
+document
+.getElementById("scheduleContainer")
+.appendChild(row);
+
+}
+
+function removeSchedule(id){
+
+document.getElementById(id)?.remove();
+
+}
+
+function saveFaculty(){
+
+const name=
+document.getElementById("name").value;
+
+const dept=
+document.getElementById("dept").value;
+
+if(!name || !dept){
+
+alert("Name and Department Required");
+
+return;
+
+}
+
+const schedules=[];
+
+document
+.querySelectorAll(".scheduleRow")
+.forEach(row=>{
+
+schedules.push({
+
+day:
+row.querySelector(".day").value,
+
+period:
+row.querySelector(".period").value,
+
+subject:
+row.querySelector(".subject").value,
+
+room:
+row.querySelector(".room").value,
+
+section:
+row.querySelector(".section").value
+
+});
+
+});
+
+const obj={
+
+name,
+
+dept,
+
+empid:
+document.getElementById("empid").value,
+
+email:
+document.getElementById("email").value,
+
+schedules
+
+};
+
+if(editId){
+
+facultyRef
+.child(editId)
+.set(obj);
+
+}else{
+
+facultyRef.push(obj);
+
+}
+
+closeModal();
+
+}
+
+function loadFaculty(){
+
+facultyRef.on(
+"value",
+snap=>{
+
+const data=snap.val();
+
+faculty=data
+? Object.keys(data)
+.map(id=>({
+id,
+...data[id]
+}))
+: [];
+
+populateFacultyDropdown();
+
+loadDashboard();
+
+}
+);
+
+}
+
+function populateFacultyDropdown(){
+
+const select=
+document.getElementById(
+"facultySelect"
+);
+
+select.innerHTML="";
+
+faculty.forEach(f=>{
+
+select.innerHTML+=`
+
+<option value="${f.id}">
+${f.name} (${f.dept})
+</option>
+
+`;
+
+});
+
+if(faculty.length){
+
+currentFacultyId=
+faculty[0].id;
+
+select.value=
+currentFacultyId;
+
+}
+
+populateDepartments();
+
+}
+
+function populateDepartments(){
+
+const depts=[
+...new Set(
+faculty.map(f=>f.dept)
+)
+];
+
+const select=
+document.getElementById(
+"deptFilter"
+);
+
+select.innerHTML=
+'<option value="">All Departments</option>';
+
+depts.forEach(d=>{
+
+select.innerHTML+=
+`<option>${d}</option>`;
+
+});
+
+}
+    function filterDepartment(){
+
+const dept=
+document.getElementById(
+"deptFilter"
+).value;
+
+const select=
+document.getElementById(
+"facultySelect"
+);
+
+select.innerHTML="";
+
+faculty
+.filter(f=>
+!dept || f.dept===dept
+)
+.forEach(f=>{
+
+select.innerHTML+=`
+<option value="${f.id}">
+${f.name}
+</option>
+`;
+
+});
+
+if(select.options.length){
+
+currentFacultyId=
+select.options[0].value;
+
+select.value=
+currentFacultyId;
+
+}
+
+loadDashboard();
+
+}
+
+function loadDashboard(){
+
+currentFacultyId=
+document.getElementById(
+"facultySelect"
+).value
+|| currentFacultyId;
+
+const f=
+faculty.find(
+x=>x.id===currentFacultyId
+);
+
+if(!f){
+
+document.getElementById(
+"dashboardPage"
+).innerHTML=
+"<div class='card'>No Faculty Selected</div>";
+
+return;
+
+}
+
+let html=`
+
+<div class="card">
+
+<h2>${f.name}</h2>
+
+<p>
+${f.dept}
+|
+${f.empid||'No ID'}
+|
+${f.email||'No Email'}
+</p>
+
+</div>
+
+<div class="card">
+
+<table>
+
+<tr>
+<th>Day</th>
+${periods.map(
+p=>`<th>${p}</th>`
+).join("")}
+</tr>
+
+`;
+
+days.forEach(day=>{
+
+html+=`<tr><td><b>${day}</b></td>`;
+
+periods.forEach(period=>{
+
+const cls=
+f.schedules?.find(
+s=>s.day===day &&
+s.period===period
+);
+
+html+=cls
+?
+`<td>
+<b>${cls.subject}</b>
+<br>
+${cls.room}
+</td>`
+:
+"<td>Free</td>";
+
+});
+
+html+="</tr>";
+
+});
+
+html+=`
+</table>
+</div>
+`;
+
+document.getElementById(
+"dashboardPage"
+).innerHTML=html;
+
+}
+
+function loadToday(){
+
+const f=
+faculty.find(
+x=>x.id===currentFacultyId
+);
+
+if(!f) return;
+
+const today=
+new Date()
+.toLocaleDateString(
+"en-US",
+{weekday:"long"}
+);
+
+const classes=
+f.schedules?.filter(
+s=>s.day===today
+) || [];
+
+let html=`
+<div class="card">
+<h2>${today}</h2>
+</div>
+`;
+
+if(classes.length===0){
+
+html+=`
+<div class="card">
+No Classes Today
+</div>
+`;
+
+}else{
+
+classes.forEach(c=>{
+
+html+=`
+<div class="card">
+<h3>${c.subject}</h3>
+<p>
+${c.period}
+|
+Room ${c.room}
+|
+${c.section}
+</p>
+</div>
+`;
+
+});
+
+}
+
+document.getElementById(
+"todayPage"
+).innerHTML=html;
+
+}
+    function loadFacultyPage(){
+
+let html=`
+<div class="card">
+<h2>
+Faculty Management
+</h2>
+<p>
+Total Faculty :
+${faculty.length}
+</p>
+</div>
+`;
+
+faculty.forEach(f=>{
+
+html+=`
+
+<div class="card">
+
+<h3>${f.name}</h3>
+
+<p>
+${f.dept}
+|
+${f.empid||'N/A'}
+|
+${f.email||'N/A'}
+</p>
+
+<br>
+
+<button
+class="btn btn-primary"
+onclick="editFaculty('${f.id}')">
+Edit
+</button>
+
+<button
+class="btn btn-danger"
+onclick="deleteFaculty('${f.id}')">
+Delete
+</button>
+
+</div>
+
+`;
+
+});
+
+document.getElementById(
+"facultyPage"
+).innerHTML=html;
+
+}
+
+function editFaculty(id){
+
+const f=
+faculty.find(
+x=>x.id===id
+);
+
+if(!f) return;
+
+editId=id;
+
+document.getElementById(
+"name"
+).value=f.name||"";
+
+document.getElementById(
+"dept"
+).value=f.dept||"";
+
+document.getElementById(
+"empid"
+).value=f.empid||"";
+
+document.getElementById(
+"email"
+).value=f.email||"";
+
+document.getElementById(
+"scheduleContainer"
+).innerHTML="";
+
+if(f.schedules){
+
+f.schedules.forEach(
+s=>addScheduleRow(s)
+);
+
+}
+
+document.getElementById(
+"facultyModal"
+).style.display="flex";
+
+}
+
+function deleteFaculty(id){
+
+if(
+!confirm(
+"Delete Faculty?"
+)
+) return;
+
+facultyRef
+.child(id)
+.remove();
+
+}
+
+function loadSubstitution(){
+
+let html=`
+
+<div class="card">
+
+<h2>
+Substitution Finder
+</h2>
+
+<div class="row">
+
+<select id="subDay">
+
+<option value="">
+Select Day
+</option>
+
+${days.map(
+d=>`<option>${d}</option>`
+).join("")}
+
+</select>
+
+<select id="subPeriod">
+
+<option value="">
+Select Period
+</option>
+
+${periods.map(
+p=>`<option>${p}</option>`
+).join("")}
+
+</select>
+
+<button
+class="btn btn-primary"
+onclick="findAvailableFaculty()">
+
+Find Faculty
+
+</button>
+
+</div>
+
+<div id="subResult">
+
+</div>
+
+</div>
+
+`;
+
+document.getElementById(
+"substitutionPage"
+).innerHTML=html;
+
+}
+
+function findAvailableFaculty(){
+
+const day=
+document.getElementById(
+"subDay"
+).value;
+
+const period=
+document.getElementById(
+"subPeriod"
+).value;
+
+let freeFaculty=
+faculty.filter(f=>{
+
+const busy=
+f.schedules?.some(
+s=>
+s.day===day &&
+s.period===period
+);
+
+return !busy;
+
+});
+
+let html="";
+
+if(freeFaculty.length===0){
+
+html=
+"<div class='card'>No Faculty Available</div>";
+
+}else{
+
+freeFaculty.forEach(f=>{
+
+html+=`
+
+<div class="card">
+
+<b>${f.name}</b>
+
+<br>
+
+${f.dept}
+
+</div>
+
+`;
+
+});
+
+}
+
+document.getElementById(
+"subResult"
+).innerHTML=html;
+
+}
+    function exportData(){
+
+const dataStr=
+JSON.stringify(
+faculty,
+null,
+2
+);
+
+const blob=
+new Blob(
+[dataStr],
+{
+type:
+"application/json"
+}
+);
+
+const a=
+document.createElement("a");
+
+a.href=
+URL.createObjectURL(blob);
+
+a.download=
+"SBU_Faculty_Backup.json";
+
+a.click();
+
+}
+
+function importData(file){
+
+const reader=
+new FileReader();
+
+reader.onload=
+function(e){
+
+try{
+
+const data=
+JSON.parse(
+e.target.result
+);
+
+facultyRef.remove();
+
+data.forEach(f=>{
+
+facultyRef.push(f);
+
+});
+
+alert(
+"Backup Imported Successfully"
+);
+
+}catch(err){
+
+alert(
+"Invalid JSON File"
+);
+
+}
+
+};
+
+reader.readAsText(file);
+
+}
+
+function createImportButton(){
+
+const div=
+document.createElement("div");
+
+div.innerHTML=`
+
+<br>
+
+<input
+type="file"
+accept=".json"
+onchange="
+importData(
+this.files[0]
+)
+">
+
+`;
+
+document.body.appendChild(div);
+
+}
+
+createImportButton();
+
+window.onclick=
+function(e){
+
+const modal=
+document.getElementById(
+"facultyModal"
+);
+
+if(e.target===modal){
+
+closeModal();
+
+}
+
+};
+
+loadDashboard();
+
+</script>
+
+</body>
+</html>
