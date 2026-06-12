@@ -305,27 +305,21 @@ Close
 
 <script>
 
-/* REPLACE WITH YOUR FIREBASE */
-
 const firebaseConfig = {
-
-apiKey:"YOUR_API_KEY",
-
-authDomain:"YOUR_PROJECT.firebaseapp.com",
-
-databaseURL:
-"https://YOUR_PROJECT-default-rtdb.firebaseio.com",
-
-projectId:"YOUR_PROJECT",
-
-storageBucket:
-"YOUR_PROJECT.appspot.com",
-
-messagingSenderId:"123456",
-
-appId:"APP_ID"
-
+  apiKey: "AIzaSyBIR71p9NAWc5yK6tK0SV2EHJFDa-U2GdU",
+  authDomain: "sbu-routine.firebaseapp.com",
+  databaseURL: "https://sbu-routine-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "sbu-routine",
+  storageBucket: "sbu-routine.firebasestorage.app",
+  messagingSenderId: "196609987228",
+  appId: "1:196609987228:web:5bd81d6cd05e5f9289d359",
+  measurementId: "G-RB8YK0B0WF"
 };
+
+firebase.initializeApp(firebaseConfig);
+
+const db = firebase.database();
+const facultyRef = db.ref("faculty");
 
 firebase.initializeApp(firebaseConfig);
 
