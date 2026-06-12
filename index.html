@@ -318,7 +318,16 @@ const firebaseConfig = {
   
 
 firebase.initializeApp(firebaseConfig);
+console.log("Firebase Connected");
 
+firebase.database()
+.ref("test")
+.set({
+  status:"working",
+  time:new Date().toISOString()
+})
+.then(()=>console.log("Write Success"))
+.catch(err=>console.error(err));
 const db = firebase.database();
 const facultyRef = db.ref("faculty");
 
