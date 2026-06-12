@@ -143,7 +143,9 @@
     };
 
     firebase.initializeApp(firebaseConfig);
+        
     const db = firebase.database();
+        console.log('Firebase connected:', db.app.name);
     const routineRef = db.ref('routineData');
     const presenceRef = db.ref('presence');
 
