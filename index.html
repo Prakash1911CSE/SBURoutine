@@ -190,6 +190,51 @@ grid-template-columns:1fr;
 </head>
 
 <body>
+<div id="loginPage"
+style="
+display:flex;
+justify-content:center;
+align-items:center;
+height:100vh;
+background:#f3f6fb;
+">
+
+<div class="card"
+style="width:400px;max-width:90%;">
+
+<h2 style="margin-bottom:20px;">
+SBU Routine Manager Login
+</h2>
+
+<input
+id="loginEmail"
+type="email"
+placeholder="Email"
+style="margin-bottom:10px;">
+
+<input
+id="loginPassword"
+type="password"
+placeholder="Password"
+style="margin-bottom:15px;">
+
+<button
+class="btn btn-primary"
+style="width:100%;"
+onclick="loginUser()">
+
+Login
+
+</button>
+
+<br><br>
+
+<div id="loginMsg"></div>
+
+</div>
+
+</div>
+<div id="appContainer" style="display:none;">
 
 <div class="topbar">
 <div class="logo">
@@ -203,9 +248,22 @@ color:#dc2626;
 padding:8px;
 ">
 </div>
-<div class="online" id="onlineCount">
+<div>
+
+<span
+class="online"
+id="onlineCount">
 1 Online
-</div>
+</span>
+
+<button
+class="btn btn-danger"
+onclick="logoutUser()">
+
+Logout
+
+</button>
+
 </div>
 
 <div class="nav">
@@ -309,6 +367,7 @@ Close
 
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>  
 
 <script>
 
@@ -336,6 +395,7 @@ firebase.database()
 .then(()=>console.log("Write Success"))
 .catch(err=>console.error(err));
 const db = firebase.database();
+const auth = firebase.auth();
 const facultyRef = db.ref("faculty");
 const substitutionRef = db.ref("substitutions");
 const presenceRef=db.ref("presence");
@@ -365,16 +425,72 @@ const periods=[
 "15:00-16:00",
 "16:00-17:00"
 ];
+function loginUser(){
 
-document.addEventListener(
-"DOMContentLoaded",
-()=>{
-    setupPresence();
-    loadFaculty();
+const email=
+document.getElementById(
+"loginEmail"
+).value;
 
-    // New Features
-    loadActiveSubstitutions();
-    updateSubAlert();
+const password=
+document.getElementById(
+"loginPassword"
+).value;
+
+auth
+.signInWithEmailAndPassword(
+email,
+password
+)
+.catch(err=>{
+
+document.getElementById(
+"loginMsg"
+).innerHTML=
+err.message;
+
+});
+
+}
+
+function logoutUser(){
+
+auth.signOut();
+
+}
+firebase.auth().onAuthStateChanged(
+user=>{
+
+if(!user){
+
+document.getElementById(
+"loginPage"
+).style.display="flex";
+
+document.getElementById(
+"appContainer"
+).style.display="none";
+
+return;
+
+}
+
+document.getElementById(
+"loginPage"
+).style.display="none";
+
+document.getElementById(
+"appContainer"
+).style.display="block";
+
+setupPresence();
+
+loadFaculty();
+
+loadActiveSubstitutions();
+
+updateSubAlert();
+
 }
 );
 
@@ -1343,6 +1459,6 @@ count>0
 loadDashboard();
 
 </script>
-
+</div>
 </body>
 </html>
