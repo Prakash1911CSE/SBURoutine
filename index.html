@@ -530,36 +530,36 @@ function assignSubstitute(leaveFacultyId,subFacultyId,day,period,date,subject,se
   const subFaculty=faculty.find(f=>f.id===subFacultyId);
   
   // Check if this exact slot is already taken
- const conflict = substitutions.find(s =>
+// SAME CLASS ALREADY ASSIGNED ?
+const classAlreadyAssigned = substitutions.find(s =>
+    s.date === date &&
+    s.period === period &&
+    s.leaveFacultyId === leaveFacultyId &&
+    s.subject === subject &&
+    s.section === section &&
+    s.status === 'active'
+);
+
+if(classAlreadyAssigned){
+    alert(
+      "This class is already assigned to " +
+      classAlreadyAssigned.subFacultyName
+    );
+    return;
+}
+
+// SUBSTITUTE FACULTY ALREADY BUSY ?
+const facultyBusy = substitutions.find(s =>
     s.date === date &&
     s.period === period &&
     s.subFacultyId === subFacultyId &&
     s.status === 'active'
 );
 
-if(conflict){
+if(facultyBusy){
     alert(
       subFaculty.name +
       " is already assigned at this time slot"
-    );
-    return;
-}
-  
-  if(conflict){
-    alert(`${subFaculty.name} is already assigned to ${conflict.leaveFacultyName} at this time`);
-    return;
-  }
-  const classAlreadyAssigned = substitutions.find(s =>
-    s.leaveFacultyId === leaveFacultyId &&
-    s.date === date &&
-    s.period === period &&
-    s.status === 'active'
-);
-
-if(classAlreadyAssigned){
-    alert(
-      "This class already has a substitute assigned: "
-      + classAlreadyAssigned.subFacultyName
     );
     return;
 }
