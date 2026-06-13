@@ -767,21 +767,11 @@ document.getElementById("leaveFromDate").value;
 const toDate =
 document.getElementById("leaveToDate").value;
 
-substitutions.forEach(sub=>{
+substitutions.forEach(sub => {
 
-  //temporarily commented
-    //if(
-        //sub.leaveFacultyId === facultyId &&
-        //sub.date >= fromDate &&
-        //sub.date <= toDate &&
-       // sub.status !== "cancelled"
-   // )
-  console.log("Checking:", sub);
+    console.log("Checking:", sub);
 
-if(
-    sub.leaveFacultyId === facultyId
-){
-  {
+    if (sub.leaveFacultyId === facultyId) {
 
         classes.push({
             date: sub.date,
@@ -794,8 +784,7 @@ if(
 
     }
 
-});
-  });
+});  });
   
   return {
     facultyId:fid,
