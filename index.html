@@ -595,7 +595,7 @@ function loadSubstitutions(){
   substitutionRef.on("value",snap=>{
     const data=snap.val();
     substitutions=data?Object.keys(data).map(id=>({id,...data[id]})):[];
-    
+    console.log("Firebase substitutions:", substitutions);//pk
     // AUTO-RELEASE: Mark past substitutions as completed
     const now=new Date();
     substitutions.forEach(s=>{
@@ -761,7 +761,7 @@ function getLeaveFormData(){
       alert("Please select faculty");
       return null;
   }
-console.log("Current substitutions:", substitutions);//PK
+
 const classes = [];
 const facultyId = fid;
 
