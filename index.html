@@ -765,18 +765,29 @@ function getLeaveFormData(){
   const classes=[];
   const facultyId=fid;
 
-  substitutions.forEach(sub=>{
-      if(sub.leaveFacultyId===facultyId){
-          classes.push({
-              date:sub.date,
-              period:sub.period,
-              room:sub.room,
-              class:sub.section,
-              person:sub.subFacultyName,
-              contact:sub.subFacultyMobile||''
-          });
-      }
-  });
+substitutions.forEach(sub => {
+
+    if(sub.leaveFacultyId !== facultyId)
+        return;
+
+    const subDate = new Date(sub.date);
+    const from = new Date(fromDate);
+    const to = new Date(toDate);
+
+    if(subDate >= from && subDate <= to){
+
+        classes.push({
+            date: sub.date,
+            period: sub.period,
+            room: sub.room,
+            class: sub.section,
+            person: sub.subFacultyName,
+            contact: sub.subFacultyMobile || ''
+        });
+
+    }
+
+});
 
   return {
       facultyId:fid,
