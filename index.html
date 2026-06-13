@@ -758,7 +758,7 @@ function getLeaveFormData(){
   if(!f){alert("Please select faculty");return null;}
   
  const classes = [];
-
+console.log("ALL SUBSTITUTIONS:", substitutions);
 const facultyId = fid;
 
 const fromDate =
@@ -769,12 +769,19 @@ document.getElementById("leaveToDate").value;
 
 substitutions.forEach(sub=>{
 
-    if(
-        sub.leaveFacultyId === facultyId &&
-        sub.date >= fromDate &&
-        sub.date <= toDate &&
-        sub.status !== "cancelled"
-    ){
+  //temporarily commented
+    //if(
+        //sub.leaveFacultyId === facultyId &&
+        //sub.date >= fromDate &&
+        //sub.date <= toDate &&
+       // sub.status !== "cancelled"
+   // )
+  console.log("Checking:", sub);
+
+if(
+    sub.leaveFacultyId === facultyId
+){
+  {
 
         classes.push({
             date: sub.date,
