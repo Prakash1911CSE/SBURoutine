@@ -549,6 +549,20 @@ if(conflict){
     alert(`${subFaculty.name} is already assigned to ${conflict.leaveFacultyName} at this time`);
     return;
   }
+  const classAlreadyAssigned = substitutions.find(s =>
+    s.leaveFacultyId === leaveFacultyId &&
+    s.date === date &&
+    s.period === period &&
+    s.status === 'active'
+);
+
+if(classAlreadyAssigned){
+    alert(
+      "This class already has a substitute assigned: "
+      + classAlreadyAssigned.subFacultyName
+    );
+    return;
+}
   
   const subData={
     leaveFacultyId,
