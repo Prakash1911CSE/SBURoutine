@@ -762,32 +762,31 @@ function getLeaveFormData(){
       return null;
   }
 
-  const classes=[];
-  const facultyId=fid;
+const classes = [];
+const facultyId = fid;
 
-  const fromDate=document.getElementById("leaveFromDate").value;
-  const toDate=document.getElementById("leaveToDate").value;
+const fromDate = document.getElementById("leaveFromDate").value;
+const toDate = document.getElementById("leaveToDate").value;
 
-  substitutions.forEach(sub=>{
+substitutions.forEach(sub => {
 
-      if(sub.leaveFacultyId!==facultyId)
-          return;
+    if(sub.leaveFacultyId !== facultyId)
+        return;
 
-      if(sub.date>=fromDate && sub.date<=toDate){
+    if(sub.date >= fromDate && sub.date <= toDate){
 
-          classes.push({
-              date:sub.date,
-              period:sub.period,
-              room:sub.room,
-              class:sub.section,
-              person:sub.subFacultyName,
-              contact:sub.subFacultyMobile || ''
-          });
+        classes.push({
+            date: sub.date,
+            period: sub.period,
+            room: sub.room,
+            class: sub.section,
+            person: sub.subFacultyName,
+            contact: sub.subFacultyMobile || ''
+        });
 
-      }
+    }
 
-  });
-
+});
   console.log("Filtered Classes:",classes);
 
   return {
