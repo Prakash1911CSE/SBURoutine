@@ -770,6 +770,11 @@ const toDate = document.getElementById("leaveToDate").value;
 
 substitutions.forEach(sub => {
 
+      console.log(                 //PK
+      "Sub Date =", sub.date,
+      "| From =", fromDate,
+      "| To =", toDate
+    );                            //PK
     if(sub.leaveFacultyId !== facultyId)
         return;
 
