@@ -753,61 +753,52 @@ function addLeaveClassRow(data={}){
 }
 
 function getLeaveFormData(){
+
   const fid=document.getElementById("leaveFacultySelect").value;
   const f=faculty.find(x=>x.id===fid);
-  if(!f){alert("Please select faculty");return null;}
-  
- const classes = [];
-console.log("ALL SUBSTITUTIONS:", substitutions);
-const facultyId = fid;
 
-const fromDate =
-document.getElementById("leaveFromDate").value;
+  if(!f){
+      alert("Please select faculty");
+      return null;
+  }
 
-const toDate =
-document.getElementById("leaveToDate").value;
+  const classes=[];
+  const facultyId=fid;
 
-substitutions.forEach(sub => {
+  substitutions.forEach(sub=>{
+      if(sub.leaveFacultyId===facultyId){
+          classes.push({
+              date:sub.date,
+              period:sub.period,
+              room:sub.room,
+              class:sub.section,
+              person:sub.subFacultyName,
+              contact:sub.subFacultyMobile||''
+          });
+      }
+  });
 
-    console.log("Checking:", sub);
-
-    if (sub.leaveFacultyId === facultyId) {
-
-        classes.push({
-            date: sub.date,
-            period: sub.period,
-            room: sub.room,
-            class: sub.section,
-            person: sub.subFacultyName,
-            contact: sub.subFacultyMobile || ''
-        });
-
-    }
-
-});  
-  
   return {
-    facultyId:fid,
-    name:f.name,
-    mobile:document.getElementById("leaveMobile").value||f.mobile||'',
-    designation:f.designation||'Faculty',
-    dept:f.dept,
-    empid:f.empid||'',
-    address:document.getElementById("leaveAddress").value,
-    days:document.getElementById("leaveDays").value,
-    from:document.getElementById("leaveFromDate").value,
-    to:document.getElementById("leaveToDate").value,
-    joinOn:document.getElementById("joiningDate").value,
-    purpose:document.getElementById("leavePurpose").value,
-    type:document.getElementById("leaveType").value,
-    pl:document.getElementById("leavePL").value||'0',
-    cl:document.getElementById("leaveCL").value||'0',
-    sl:document.getElementById("leaveSL").value||'0',
-    classes:classes,
-    appliedAt:new Date().toISOString()
+      facultyId:fid,
+      name:f.name,
+      mobile:document.getElementById("leaveMobile").value||f.mobile||'',
+      designation:f.designation||'Faculty',
+      dept:f.dept,
+      empid:f.empid||'',
+      address:document.getElementById("leaveAddress").value,
+      days:document.getElementById("leaveDays").value,
+      from:document.getElementById("leaveFromDate").value,
+      to:document.getElementById("leaveToDate").value,
+      joinOn:document.getElementById("joiningDate").value,
+      purpose:document.getElementById("leavePurpose").value,
+      type:document.getElementById("leaveType").value,
+      pl:document.getElementById("leavePL").value||'0',
+      cl:document.getElementById("leaveCL").value||'0',
+      sl:document.getElementById("leaveSL").value||'0',
+      classes:classes,
+      appliedAt:new Date().toISOString()
   };
 }
-
 function previewLeavePDF(){
   const data=getLeaveFormData();
   if(!data) return;
