@@ -479,19 +479,33 @@ function findSubstitutes(){
     return;
   }
   
-  const freeFaculty=faculty.filter(f=>{
-    if(f.id===facultyId)return false;
-    const busy=f.schedules?.some(s=>s.day===day&&s.period===period);
-    return!busy;
+  const now=new Date();
+  const busyFacultyIds=new Set();
+  
+  // 1. Faculty with regular class at this time
+  faculty.forEach(f=>{
+    if(f.schedules?.some(s=>s.day===day&&s.period===period)){
+      busyFacultyIds.add(f.id);
+    }
   });
+  
+  // 2. Faculty already substituting ANYONE at this exact date+period
+  substitutions.forEach(s=>{
+    if(s.date===date&&s.period===period&&s.status==='active'&&new Date(s.endDateTime)>now){
+      busyFacultyIds.add(s.subFacultyId);
+    }
+  });
+  
+  const freeFaculty=faculty.filter(f=>f.id!==facultyId&&!busyFacultyIds.has(f.id));
   
   let html=`<div class="card"><h3>Class Details</h3>
     <p><b>Subject:</b> ${classToSub.subject} | <b>Section:</b> ${classToSub.section} | <b>Room:</b> ${classToSub.room}</p>
-    <p><b>Time:</b> ${day}, ${period} | <b>Date:</b> ${date}</p></div>
+    <p><b>Time:</b> ${day}, ${period} | <b>Date:</b> ${date}</p>
+    <p style="color:var(--warning);font-size:13px;margin-top:8px;"><i class="fa-solid fa-shield-halved"></i> Faculty already teaching or substituting at this time are excluded</p></div>
     <div class="card"><h3>Available Faculty (${freeFaculty.length})</h3>`;
   
   if(freeFaculty.length===0){
-    html+=`<div class="empty-state"><i class="fa-solid fa-user-slash"></i><p>No faculty available for substitution</p></div>`;
+    html+=`<div class="empty-state"><i class="fa-solid fa-user-slash"></i><p>No faculty available</p><p style="font-size:12px;margin-top:8px;">All faculty are either teaching or already assigned as substitutes</p></div>`;
   }else{
     freeFaculty.forEach(f=>{
       html+=`<div class="sub-card">
@@ -510,10 +524,22 @@ function findSubstitutes(){
   html+=`</div>`;
   document.getElementById("subResult").innerHTML=html;
 }
-
 function assignSubstitute(leaveFacultyId,subFacultyId,day,period,date,subject,section,room){
   const leaveFaculty=faculty.find(f=>f.id===leaveFacultyId);
   const subFaculty=faculty.find(f=>f.id===subFacultyId);
+  
+  // Check if this exact slot is already taken
+  const conflict=substitutions.find(s=>
+    s.date===date && 
+    s.period===period && 
+    s.subFacultyId===subFacultyId && 
+    s.status==='active'
+  );
+  
+  if(conflict){
+    alert(`${subFaculty.name} is already assigned to ${conflict.leaveFacultyName} at this time`);
+    return;
+  }
   
   const subData={
     leaveFacultyId,
@@ -534,8 +560,7 @@ function assignSubstitute(leaveFacultyId,subFacultyId,day,period,date,subject,se
     loadSubstitutions();
     loadActiveSubstitutions();
     updateSubAlert();
-    showPage('leave',document.querySelector('.nav-tabs button:nth-child(5)'));
-    setTimeout(()=>populateLeaveForm(subData),300);
+    findSubstitutes(); // Refresh list to hide this faculty now
   });
 }
 
@@ -543,6 +568,17 @@ function loadSubstitutions(){
   substitutionRef.on("value",snap=>{
     const data=snap.val();
     substitutions=data?Object.keys(data).map(id=>({id,...data[id]})):[];
+    
+    // AUTO-RELEASE: Mark past substitutions as completed
+    const now=new Date();
+    substitutions.forEach(s=>{
+      if(s.status==='active' && new Date(s.endDateTime)<now){
+        substitutionRef.child(s.id).update({status:'completed',completedAt:now.toISOString()});
+      }
+    });
+    
+    loadActiveSubstitutions();
+    updateSubAlert();
   });
 }
 
@@ -743,143 +779,139 @@ function generateLeavePDF(){
 function createLeavePDF(data,classes,isPreview=false){
   const template=document.getElementById("leaveFormTemplate");
   template.innerHTML=`
-    <div class="leave-form-pdf" id="pdfContent">
-      <div style="text-align:center;margin-bottom:10px;">
-        <div style="font-size:24pt;font-weight:bold;letter-spacing:2px;">
-          <span style="border:2px solid #000;padding:2px 8px;">S</span>ARALA
-          <span style="border:2px solid #000;padding:2px 8px;">B</span>IRLA
-          <span style="border:2px solid #000;padding:2px 8px;">U</span>NIVERSITY
+    <div class="leave-form-pdf" id="pdfContent" style="font-family:'Times New Roman',serif;font-size:11pt;line-height:1.4;">
+      <div style="text-align:center;margin-bottom:5px;">
+        <div style="font-size:20pt;font-weight:bold;letter-spacing:1px;">
+          <span style="border:2px solid #000;padding:1px 5px;margin:0 1px;">S</span>ARALA
+          <span style="border:2px solid #000;padding:1px 5px;margin:0 1px;">B</span>IRLA
+          <span style="border:2px solid #000;padding:1px 5px;margin:0 1px;">U</span>NIVERSITY
         </div>
+        <div style="font-size:10pt;margin-top:3px;">Birla Knowledge City, Mahilong, Ranchi</div>
       </div>
-      <h2>LEAVE APPLICATION FORM</h2>
-      <div style="text-align:right;font-weight:bold;margin-bottom:20px;">SBU - HRD - 05</div>
+      <h2 style="font-size:14pt;margin:12px 0 3px 0;text-align:center;">LEAVE APPLICATION FORM</h2>
+      <div style="text-align:right;font-weight:bold;font-size:10pt;margin-bottom:15px;">SBU-HRD-05</div>
       
-      <div class="form-row">
-        <span class="form-label">Date:</span>
-        <span class="form-value">${new Date().toLocaleDateString('en-GB')}</span>
-      </div>
+      <table style="width:100%;border:none;margin-bottom:8px;">
+        <tr><td style="width:25%;border:none;padding:3px 0;">Name of Applicant:</td>
+            <td style="border-bottom:1px dotted #000;width:40%;">${data.name}</td>
+            <td style="width:15%;border:none;padding:3px 0;">Mobile No:</td>
+            <td style="border-bottom:1px dotted #000;">${data.mobile}</td></tr>
+      </table>
       
-      <div class="form-row">
-        <span class="form-label">Name of the Applicant:</span>
-        <span class="form-value">${data.name}</span>
-        <span style="margin-left:20px;">(Mob No):</span>
-        <span class="form-value" style="min-width:150px;">${data.mobile}</span>
-      </div>
+      <table style="width:100%;border:none;margin-bottom:8px;">
+        <tr><td style="width:25%;border:none;padding:3px 0;">Designation:</td>
+            <td style="border-bottom:1px dotted #000;width:40%;">${data.designation}</td>
+            <td style="width:15%;border:none;padding:3px 0;">Dept.:</td>
+            <td style="border-bottom:1px dotted #000;">${data.dept}</td></tr>
+      </table>
       
-      <div class="form-row">
-        <span class="form-label">Designation:</span>
-        <span class="form-value">${data.designation}</span>
-        <span style="margin-left:20px;">Dept/Branch:</span>
-        <span class="form-value" style="min-width:150px;">${data.dept}</span>
-      </div>
+      <table style="width:100%;border:none;margin-bottom:8px;">
+        <tr><td style="width:25%;border:none;padding:3px 0;">Address during Leave:</td>
+            <td style="border-bottom:1px dotted #000;width:50%;">${data.address}</td>
+            <td style="width:15%;border:none;padding:3px 0;">No. of Days:</td>
+            <td style="border-bottom:1px dotted #000;">${data.days}</td></tr>
+      </table>
       
-      <div class="form-row">
-        <span class="form-label">Address During Leave:</span>
-        <span class="form-value">${data.address}</span>
-        <span style="margin-left:20px;">No of Days:</span>
-        <span class="form-value" style="min-width:80px;">${data.days}</span>
-      </div>
+      <table style="width:100%;border:none;margin-bottom:8px;">
+        <tr><td style="width:25%;border:none;padding:3px 0;">Period of leave from:</td>
+            <td style="border-bottom:1px dotted #000;width:30%;">${data.from}</td>
+            <td style="width:10%;border:none;padding:3px 0;">To:</td>
+            <td style="border-bottom:1px dotted #000;">${data.to}</td></tr>
+      </table>
       
-      <div class="form-row">
-        <span class="form-label">Period of Leave: From</span>
-        <span class="form-value">${data.from}</span>
-        <span style="margin-left:20px;">To:</span>
-        <span class="form-value">${data.to}</span>
-      </div>
+      <table style="width:100%;border:none;margin-bottom:8px;">
+        <tr><td style="width:25%;border:none;padding:3px 0;">To join on:</td>
+            <td style="border-bottom:1px dotted #000;">${data.joinOn}</td></tr>
+      </table>
       
-      <div class="form-row">
-        <span class="form-label">To Join On:</span>
-        <span class="form-value">${data.joinOn}</span>
-      </div>
+      <table style="width:100%;border:none;margin-bottom:8px;">
+        <tr><td style="width:25%;border:none;padding:3px 0;">Purpose of leave:</td>
+            <td style="border-bottom:1px dotted #000;">${data.purpose}</td></tr>
+      </table>
       
-      <div class="form-row">
-        <span class="form-label">Purpose of Leave:</span>
-        <span class="form-value">${data.purpose}</span>
-      </div>
+      <table style="width:100%;border:none;margin-bottom:8px;">
+        <tr><td style="width:45%;border:none;padding:3px 0;">Type of leave(CL/Medical/Privilege):</td>
+            <td style="border-bottom:1px dotted #000;">${data.type}</td></tr>
+      </table>
       
-      <div class="form-row">
-        <span class="form-label">Type of Leave: (Privilege / Casual / Medical):</span>
-        <span class="form-value">${data.type}</span>
-      </div>
+      <table style="width:100%;border:none;margin-bottom:15px;">
+        <tr><td style="width:25%;border:none;padding:3px 0;">Leave at credit:</td>
+            <td style="border:none;padding:3px 0;">PL</td>
+            <td style="border-bottom:1px dotted #000;width:12%;">${data.pl}</td>
+            <td style="border:none;padding:3px 0;">CL</td>
+            <td style="border-bottom:1px dotted #000;width:12%;">${data.cl}</td>
+            <td style="border:none;padding:3px 0;">SL</td>
+            <td style="border-bottom:1px dotted #000;width:12%;">${data.sl}</td></tr>
+      </table>
       
-      <div class="form-row">
-        <span class="form-label">Leave at Credit: (P/L</span>
-        <span class="form-value" style="min-width:60px;">${data.pl}</span>
-        <span>C/L</span>
-        <span class="form-value" style="min-width:60px;">${data.cl}</span>
-        <span>S/L</span>
-        <span class="form-value" style="min-width:60px;">${data.sl}</span>
-        <span>)</span>
-      </div>
-      
-      <div style="text-align:center;margin:30px 0 10px 0;font-weight:bold;">Signature of Applicant with date</div>
-      
-      <table>
+      <table style="width:100%;border-collapse:collapse;font-size:9pt;margin-top:15px;">
         <thead>
-          <tr>
-            <th>Date</th>
-            <th>Period Time</th>
-            <th>Room No.</th>
-            <th>Class</th>
-            <th>Person assigned</th>
-            <th>Signature</th>
-            <th>Contact No</th>
+          <tr style="background:#f0f0f0;">
+            <th style="border:1px solid #000;padding:5px;width:12%;">Date</th>
+            <th style="border:1px solid #000;padding:5px;width:15%;">Period</th>
+            <th style="border:1px solid #000;padding:5px;width:12%;">RoomNo</th>
+            <th style="border:1px solid #000;padding:5px;width:15%;">Class</th>
+            <th style="border:1px solid #000;padding:5px;width:23%;">Substituted By</th>
+            <th style="border:1px solid #000;padding:5px;width:23%;">Mobile No</th>
           </tr>
         </thead>
         <tbody>
           ${classes.map(c=>`
             <tr>
-              <td>${c.date}</td>
-              <td>${c.period}</td>
-              <td>${c.room}</td>
-              <td>${c.class}</td>
-              <td>${c.person}</td>
-              <td></td>
-              <td>${c.contact||''}</td>
+              <td style="border:1px solid #000;padding:5px;">${c.date}</td>
+              <td style="border:1px solid #000;padding:5px;">${c.period}</td>
+              <td style="border:1px solid #000;padding:5px;">${c.room}</td>
+              <td style="border:1px solid #000;padding:5px;">${c.class}</td>
+              <td style="border:1px solid #000;padding:5px;">${c.person}</td>
+              <td style="border:1px solid #000;padding:5px;">${c.contact||''}</td>
             </tr>
           `).join("")}
-          ${Array(Math.max(0,8-classes.length)).fill(0).map(()=>`
-            <tr><td>&nbsp;</td><td></td><td></td><td></td><td></td></tr>
+          ${Array(Math.max(0,6-classes.length)).fill(0).map(()=>`
+            <tr>
+              <td style="border:1px solid #000;padding:5px;height:20px;">&nbsp;</td>
+              <td style="border:1px solid #000;padding:5px;"></td>
+              <td style="border:1px solid #000;padding:5px;"></td>
+              <td style="border:1px solid #000;padding:5px;"></td>
+              <td style="border:1px solid #000;padding:5px;"></td>
+              <td style="border:1px solid #000;padding:5px;"></td>
+            </tr>
           `).join("")}
         </tbody>
       </table>
       
-      <div style="text-align:center;margin:30px 0 10px 0;font-weight:bold;">For office Use</div>
+      <div style="margin-top:25px;font-weight:bold;font-size:10pt;">For Office Use Only:</div>
       
-      <div class="form-row">
-        <span>Mr/Ms/Mrs.</span>
-        <span class="form-value" style="min-width:300px;"></span>
-        <span style="margin-left:20px;">Designation:</span>
-        <span class="form-value" style="min-width:150px;"></span>
-      </div>
+      <table style="width:100%;border:none;margin-top:12px;">
+        <tr><td style="border:none;padding:3px 0;">Mr/Ms/Mrs:</td>
+            <td style="border-bottom:1px dotted #000;width:45%;"></td>
+            <td style="border:none;padding:3px 0;">Designation:</td>
+            <td style="border-bottom:1px dotted #000;width:25%;"></td></tr>
+      </table>
       
-      <div class="form-row">
-        <span>May be / May not be sanctioned Leave.</span>
-      </div>
+      <div style="margin:15px 0;">May be/ May not be sanctioned leave</div>
       
-      <div style="display:flex;justify-content:space-between;margin-top:60px;">
-        <div>HOD / In charge of the Department</div>
-        <div>Authority of the University</div>
+      <div style="display:flex;justify-content:space-between;margin-top:60px;font-size:10pt;">
+        <div>HOD/In charge of the Department</div>
+        <div>Authority of University</div>
       </div>
     </div>
   `;
   
-  html2canvas(document.getElementById("pdfContent"),{scale:2}).then(canvas=>{
+  html2canvas(document.getElementById("pdfContent"),{scale:2,useCORS:true}).then(canvas=>{
     const imgData=canvas.toDataURL('image/png');
     const pdf=new jsPDF('p','mm','a4');
-    const pdfWidth=pdf.internal.pageSize.getWidth();
+    const pdfWidth=210;
     const pdfHeight=(canvas.height*pdfWidth)/canvas.width;
     pdf.addImage(imgData,'PNG',0,0,pdfWidth,pdfHeight);
     
     if(isPreview){
       window.open(pdf.output('bloburl'),'_blank');
     }else{
-      pdf.save(`Leave_Application_${data.name}_${data.from}.pdf`);
+      pdf.save(`SBU_Leave_${data.name}_${data.from}.pdf`);
       showToast('PDF Downloaded','success');
     }
   });
 }
-
 function saveLeaveApplication(){
   const data=getLeaveFormData();
   if(!data) return;
