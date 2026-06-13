@@ -491,11 +491,15 @@ function findSubstitutes(){
   });
   
   // 2. Faculty already substituting ANYONE at this exact date+period
-  substitutions.forEach(s=>{
-    if(s.date===date&&s.period===period&&s.status==='active'&&new Date(s.endDateTime)>now){
+ substitutions.forEach(s=>{
+  if(
+      s.date === date &&
+      s.period === period &&
+      s.status === 'active'
+  ){
       busyFacultyIds.add(s.subFacultyId);
-    }
-  });
+  }
+});
   
   const freeFaculty=faculty.filter(f=>f.id!==facultyId&&!busyFacultyIds.has(f.id));
   
