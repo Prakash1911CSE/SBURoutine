@@ -595,7 +595,7 @@ function loadSubstitutions(){
   substitutionRef.on("value",snap=>{
     const data=snap.val();
     substitutions=data?Object.keys(data).map(id=>({id,...data[id]})):[];
-    
+    console.log(substitutions);// PRAKASH
     // AUTO-RELEASE: Mark past substitutions as completed
     const now=new Date();
     substitutions.forEach(s=>{
