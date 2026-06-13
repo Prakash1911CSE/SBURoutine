@@ -757,16 +757,37 @@ function getLeaveFormData(){
   const f=faculty.find(x=>x.id===fid);
   if(!f){alert("Please select faculty");return null;}
   
-  const classes=[];
-  document.querySelectorAll("#leaveClassesContainer.scheduleRow").forEach(row=>{
-    classes.push({
-      date:row.querySelector(".leave-date").value,
-      period:row.querySelector(".leave-period").value,
-      room:row.querySelector(".leave-room").value,
-      class:row.querySelector(".leave-class").value,
-      person:row.querySelector(".leave-person").value,
-      contact:''
-    });
+ const classes = [];
+
+const facultyId = fid;
+
+const fromDate =
+document.getElementById("leaveFromDate").value;
+
+const toDate =
+document.getElementById("leaveToDate").value;
+
+substitutions.forEach(sub=>{
+
+    if(
+        sub.leaveFacultyId === facultyId &&
+        sub.date >= fromDate &&
+        sub.date <= toDate &&
+        sub.status !== "cancelled"
+    ){
+
+        classes.push({
+            date: sub.date,
+            period: sub.period,
+            room: sub.room,
+            class: sub.section,
+            person: sub.subFacultyName,
+            contact: sub.subFacultyMobile || ''
+        });
+
+    }
+
+});
   });
   
   return {
