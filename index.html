@@ -427,6 +427,7 @@ function deleteFaculty(id){
   if(!confirm("Delete Faculty? This will remove all schedules.")) return;
   facultyRef.child(id).remove();
   showToast('Faculty deleted','success');
+  loadFacultyPage();
 }
 
 // SUBSTITUTION MODULE
