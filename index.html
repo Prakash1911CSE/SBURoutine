@@ -605,35 +605,46 @@ if(facultyBusy){
 }
 
 function loadSubstitutions(){
-  substitutionRef.on("value",snap=>{
-    const data=snap.val();
-    substitutions=data?Object.keys(data).map(id=>({id,...data[id]})):[];
-    console.log("Firebase substitutions:", substitutions);//pk -delete
-    
-    // AUTO-RELEASE: Mark past substitutions as completed
-    const now=new Date();
-    substitutions.forEach(s=>{
-      if(s.status==='active' && new Date(s.endDateTime)<now){
-        substitutionRef.child(s.id).update({status:'completed',completedAt:now.toISOString()});
+  substitutionRef.on("value", snap => {
+    const data = snap.val();
+    let subs = data? Object.keys(data).map(id => ({id,...data[id]})) : [];
+    console.log("Firebase substitutions:", subs); //pk -delete
+
+    // AUTO-RELEASE: Update DB but don't rely on this data for rendering
+    const now = new Date();
+    const updates = {};
+    subs.forEach(s => {
+      if(s.status === 'active' && new Date(s.endDateTime) < now){
+        updates[`${s.id}/status`] = 'completed';
+        updates[`${s.id}/completedAt`] = now.toISOString();
+        s.status = 'completed'; // update local copy too so render is correct
       }
     });
-    
+
+    if(Object.keys(updates).length > 0){
+      substitutionRef.update(updates); // batch update, triggers new "value" event
+      return; // let the next "value" event handle the render with fresh data
+    }
+
+    // Only render when no DB updates are pending
+    substitutions = subs; // update global
     loadActiveSubstitutions();
     updateSubAlert();
   });
 }
 
 function loadActiveSubstitutions(){
-  const now=new Date();
-  let html=`<div class="card"><h2><i class="fa-solid fa-bell"></i> Active Substitutions</h2>`;
-  let hasActive=false;
-  
-  substitutions.forEach(s=>{
-    const endTime=new Date(s.endDateTime);
-    if(endTime>now&&s.status==='active'){
-      hasActive=true;
-      const timeLeft=Math.ceil((endTime-now)/(1000*60*60));
-      html+=`<div class="sub-card">
+  const now = new Date();
+  let html = `<div class="card"><h2><i class="fa-solid fa-bell"></i> Active Substitutions</h2>`;
+  let hasActive = false;
+
+  substitutions.forEach(s => {
+    const endTime = new Date(s.endDateTime);
+    // Check both time AND status
+    if(endTime > now && s.status === 'active'){
+      hasActive = true;
+      const timeLeft = Math.ceil((endTime - now) / (1000 * 60 * 60));
+      html += `<div class="sub-card">
         <div style="display:flex;justify-content:space-between;align-items:start;gap:10px;flex-wrap:wrap;">
           <div>
             <span class="badge badge-warning">${s.period}</span>
@@ -649,13 +660,12 @@ function loadActiveSubstitutions(){
       </div>`;
     }
   });
-  
-  if(!hasActive) html+=`<p style="color:var(--muted);">No active substitutions</p>`;
-  html+="</div>";
-  document.getElementById("activeSubstitutions").innerHTML=html;
-}
 
-function cancelSubstitution(id){
+  if(!hasActive) html += `<p style="color:var(--muted);">No active substitutions</p>`;
+  html += "</div>";
+  document.getElementById("activeSubstitutions").innerHTML = html;
+}
+  function cancelSubstitution(id){
   if(confirm("Cancel this substitution?")){
     substitutionRef.child(id).update({status:'cancelled',cancelledAt:new Date().toISOString()});
     loadSubstitutions();
