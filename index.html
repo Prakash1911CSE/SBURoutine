@@ -128,7 +128,7 @@ td b{color:var(--primary);}
       </div>
     </div>
 
-    <div id="activeSubs"></div>
+    <div id="activeSubstitutions "></div>
     <div id="dashboardPage" class="page"></div>
     <div id="todayPage" class="page hidden"></div>
     <div id="facultyPage" class="page hidden"></div>
@@ -652,7 +652,7 @@ function loadActiveSubstitutions(){
   
   if(!hasActive) html+=`<p style="color:var(--muted);">No active substitutions</p>`;
   html+="</div>";
-  document.getElementById("activeSubs").innerHTML=html;
+  document.getElementById("activeSubstitutions ").innerHTML=html;
 }
 
 function cancelSubstitution(id){
