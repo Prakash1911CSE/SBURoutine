@@ -319,8 +319,16 @@ function saveFaculty(){
     designation:document.getElementById("designation").value,
     schedules
   };
-  if(editId){facultyRef.child(editId).set(obj);}else{facultyRef.push(obj);}
-  closeModal();
+if(editId){
+    facultyRef.child(editId).set(obj).then(()=>{
+        loadFacultyPage();
+        closeModal();
+    });
+}else{
+    facultyRef.push(obj).then(()=>{
+        loadFacultyPage();
+        closeModal();
+    });
 }
 
 function loadFaculty(){             //PK-keep
