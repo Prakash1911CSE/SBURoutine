@@ -634,6 +634,7 @@ function loadSubstitutions(){
 }
 
 function loadActiveSubstitutions(){
+  console.log(document.getElementById("activeSubstitutions"));
   const now = new Date();
   let html = `<div class="card"><h2><i class="fa-solid fa-bell"></i> Active Substitutions</h2>`;
   let hasActive = false;
