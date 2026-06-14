@@ -323,36 +323,16 @@ function saveFaculty(){
   closeModal();
 }
 
-//function loadFaculty(){             PK-keep
-  //facultyRef.on("value",snap=>{
- //   const data=snap.val();
- //   faculty=data?Object.keys(data).map(id=>({id,...data[id]})):[];
-//    populateFacultyDropdown();
- //   loadDashboard();
-//  });
-//}
-  function loadFaculty(){      //PK- Delete
-
-   console.log("loadFaculty called");
-
-  facultyRef.on("value",snap=>{
-
-    console.log("FACULTY LIST UPDATED");
-
-    const data=snap.val();
-
-    console.log("Firebase faculty data:", data);
-
-    faculty=data
-      ? Object.keys(data).map(id=>({id,...data[id]}))
-      : [];
-
-    populateFacultyDropdown();
-    loadDashboard();
-
+function loadFaculty(){             //PK-keep
+   facultyRef.on("value",snap=>{
+   const data=snap.val();
+   faculty=data?Object.keys(data).map(id=>({id,...data[id]})):[];
+   populateFacultyDropdown();
+   loadDashboard();
+   loadFacultyPage(); 
   });
-
 }
+ 
 
 function populateFacultyDropdown(){
   const select=document.getElementById("facultySelect");
