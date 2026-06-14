@@ -322,13 +322,33 @@ function saveFaculty(){
   closeModal();
 }
 
-function loadFaculty(){
+//function loadFaculty(){ PK
+  //facultyRef.on("value",snap=>{
+ //   const data=snap.val();
+ //   faculty=data?Object.keys(data).map(id=>({id,...data[id]})):[];
+//    populateFacultyDropdown();
+ //   loadDashboard();
+//  });
+//}
+  function loadFaculty(){
+
   facultyRef.on("value",snap=>{
+
+    console.log("FACULTY LIST UPDATED");
+
     const data=snap.val();
-    faculty=data?Object.keys(data).map(id=>({id,...data[id]})):[];
+
+    faculty=data
+      ? Object.keys(data).map(id=>({id,...data[id]}))
+      : [];
+
+    console.log("Total Faculty:", faculty.length);
+
     populateFacultyDropdown();
     loadDashboard();
+
   });
+
 }
 
 function populateFacultyDropdown(){
