@@ -799,7 +799,8 @@ substitutions.forEach(sub => {
         return;
 
     if(sub.date >= fromDate && sub.date <= toDate){
-
+        if(sub.status !== 'active')
+    return;
         classes.push({
             date: sub.date,
             period: sub.period,
