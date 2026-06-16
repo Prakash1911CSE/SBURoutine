@@ -862,51 +862,52 @@ function createLeavePDF(data,classes,isPreview=false){
       </div>
       <h2 style="font-size:14pt;margin:12px 0 3px 0;text-align:center;">LEAVE APPLICATION FORM</h2>
       <div style="text-align:right;font-weight:bold;font-size:10pt;margin-bottom:15px;">SBU-HRD-05</div>
-      
-      <table style="width:100%;border:none;margin-bottom:8px;">
+
+      <table style="width:100%;border-collapse:collapse;">//pk
+      //<table style="width:100%;border:none;margin-bottom:8px;">
         <tr><td style="width:25%;border:none;padding:3px 0;">Name of Applicant:</td>
             <td style="border-bottom:1px dotted #000;width:40%;">${data.name}</td>
             <td style="width:15%;border:none;padding:3px 0;">Mobile No:</td>
             <td style="border-bottom:1px dotted #000;">${data.mobile}</td></tr>
       </table>
-      
-      <table style="width:100%;border:none;margin-bottom:8px;">
+     <table style="width:100%;border-collapse:collapse;">//pk 
+     // <table style="width:100%;border:none;margin-bottom:8px;">
         <tr><td style="width:25%;border:none;padding:3px 0;">Designation:</td>
             <td style="border-bottom:1px dotted #000;width:40%;">${data.designation}</td>
             <td style="width:15%;border:none;padding:3px 0;">Dept.:</td>
             <td style="border-bottom:1px dotted #000;">${data.dept}</td></tr>
       </table>
-      
-      <table style="width:100%;border:none;margin-bottom:8px;">
+      <table style="width:100%;border-collapse:collapse;">//pk
+      //<table style="width:100%;border:none;margin-bottom:8px;">
         <tr><td style="width:25%;border:none;padding:3px 0;">Address during Leave:</td>
             <td style="border-bottom:1px dotted #000;width:50%;">${data.address}</td>
             <td style="width:15%;border:none;padding:3px 0;">No. of Days:</td>
             <td style="border-bottom:1px dotted #000;">${data.days}</td></tr>
       </table>
-      
-      <table style="width:100%;border:none;margin-bottom:8px;">
+      <table style="width:100%;border-collapse:collapse;">//pk
+      //<table style="width:100%;border:none;margin-bottom:8px;">
         <tr><td style="width:25%;border:none;padding:3px 0;">Period of leave from:</td>
             <td style="border-bottom:1px dotted #000;width:30%;">${data.from}</td>
             <td style="width:10%;border:none;padding:3px 0;">To:</td>
             <td style="border-bottom:1px dotted #000;">${data.to}</td></tr>
       </table>
-      
-      <table style="width:100%;border:none;margin-bottom:8px;">
+     <table style="width:100%;border-collapse:collapse;">//pk 
+     // <table style="width:100%;border:none;margin-bottom:8px;">
         <tr><td style="width:25%;border:none;padding:3px 0;">To join on:</td>
             <td style="border-bottom:1px dotted #000;">${data.joinOn}</td></tr>
       </table>
-      
-      <table style="width:100%;border:none;margin-bottom:8px;">
+      <table style="width:100%;border-collapse:collapse;">//pk
+      //<table style="width:100%;border:none;margin-bottom:8px;">
         <tr><td style="width:25%;border:none;padding:3px 0;">Purpose of leave:</td>
             <td style="border-bottom:1px dotted #000;">${data.purpose}</td></tr>
       </table>
-      
-      <table style="width:100%;border:none;margin-bottom:8px;">
+      <table style="width:100%;border-collapse:collapse;">//pk
+     // <table style="width:100%;border:none;margin-bottom:8px;">
         <tr><td style="width:45%;border:none;padding:3px 0;">Type of leave(CL/Medical/Privilege):</td>
             <td style="border-bottom:1px dotted #000;">${data.type}</td></tr>
       </table>
-      
-      <table style="width:100%;border:none;margin-bottom:15px;">
+      <table style="width:100%;border-collapse:collapse;">//pk
+      //<table style="width:100%;border:none;margin-bottom:15px;">
         <tr><td style="width:25%;border:none;padding:3px 0;">Leave at credit:</td>
             <td style="border:none;padding:3px 0;">PL</td>
             <td style="border-bottom:1px dotted #000;width:12%;">${data.pl}</td>
