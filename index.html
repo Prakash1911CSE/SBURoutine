@@ -851,13 +851,20 @@ function generateLeavePDF(){
 function createLeavePDF(data,classes,isPreview=false){
   const template=document.getElementById("leaveFormTemplate");
   template.innerHTML=`
-    <div class="leave-form-pdf" id="pdfContent" style="font-family:'Times New Roman',serif;font-size:11pt;line-height:1.4;">
-      <div style="text-align:center;margin-bottom:5px;">
-        <div style="font-size:20pt;font-weight:bold;letter-spacing:1px;">
-          <span style="border:none solid #000;padding:1px 5px;margin:0 1px;"> </span>SARALA
-          <span style="border:none solid #000;padding:1px 5px;margin:0 1px;"> </span>BIRLA
-          <span style="border:none solid #000;padding:1px 5px;margin:0 1px;"> </span>UNIVERSITY
-        </div>
+  <div class="leave-form-pdf" id="pdfContent"
+     style="font-family:'Times New Roman',serif;font-size:11pt;line-height:1.4;">
+
+  <div style="display:flex;align-items:center;margin-bottom:10px;">
+
+    <div style="width:90px;">
+      <img src="sbu_logo.png"
+           style="width:80px;height:auto;">
+    </div>
+
+    <div style="flex:1;text-align:center;">
+      <div style="font-size:20pt;font-weight:bold;letter-spacing:1px;">
+        SARALA BIRLA UNIVERSITY
+      </div>
         <div style="font-size:10pt;margin-top:3px;">Birla Knowledge City, Mahilong, Ranchi</div>
       </div>
       <h2 style="font-size:14pt;margin:12px 0 3px 0;text-align:center;">LEAVE APPLICATION FORM</h2>
