@@ -851,25 +851,42 @@ function generateLeavePDF(){
 function createLeavePDF(data,classes,isPreview=false){
   const template=document.getElementById("leaveFormTemplate");
   template.innerHTML=`
-  <div class="leave-form-pdf" id="pdfContent"
+<div class="leave-form-pdf" id="pdfContent"
      style="font-family:'Times New Roman',serif;font-size:11pt;line-height:1.4;">
 
-  <div style="display:flex;align-items:center;margin-bottom:10px;">
+  <!-- HEADER -->
+  <div style="display:flex;align-items:center;margin-bottom:15px;">
 
+    <!-- LOGO -->
     <div style="width:90px;">
-      <img src="https://prakash1911cse.github.io/SBURoutine/SBU_Logo.png"
-           style="width:80px;height:auto;">
+      <img
+        src="https://prakash1911cse.github.io/SBURoutine/SBU_Logo.png"
+        crossorigin="anonymous"
+        style="width:80px;height:80px;display:block;">
     </div>
 
+    <!-- UNIVERSITY DETAILS -->
     <div style="flex:1;text-align:center;">
-      <div style="font-size:20pt;font-weight:bold;letter-spacing:1px;">
+
+      <div style="font-size:20pt;font-weight:bold;">
         SARALA BIRLA UNIVERSITY
       </div>
-        <div style="font-size:10pt;margin-top:3px;">Birla Knowledge City, Mahilong, Ranchi</div>
-      </div>
-      <h2 style="font-size:14pt;margin:12px 0 3px 0;text-align:center;">LEAVE APPLICATION FORM</h2>
-      <div style="text-align:right;font-weight:bold;font-size:10pt;margin-bottom:15px;">SBU-HRD-05</div>
 
+      <div style="font-size:10pt;margin-top:4px;">
+        Birla Knowledge City, Mahilong, Ranchi
+      </div>
+
+      <div style="font-size:14pt;font-weight:bold;margin-top:12px;">
+        LEAVE APPLICATION FORM
+      </div>
+
+      <div style="font-size:10pt;margin-top:5px;">
+        SBU-HRD-05
+      </div>
+
+    </div>
+
+  </div>
       <table style="width:100%;border-collapse:collapse;margin-bottom:8px;">
   <tr>
     <td style="width:25%;border:none;padding:3px 0;">Name of Applicant:</td>
