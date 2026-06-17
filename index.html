@@ -848,184 +848,189 @@ function generateLeavePDF(){
   createLeavePDF(data,data.classes,false);
 }
 
-function createLeavePDF(data,classes,isPreview=false){
-  const template=document.getElementById("leaveFormTemplate");
-  template.innerHTML=`
-<div class="leave-form-pdf" id="pdfContent"
-     style="font-family:'Times New Roman',serif;font-size:11pt;line-height:1.4;">
-
-  <!-- HEADER -->
-  <div style="display:flex;align-items:center;margin-bottom:15px;">
-
-    <!-- LOGO -->
-    <div style="width:90px;">
-      <img
-        src="https://prakash1911cse.github.io/SBURoutine/SBU_Logo.png"
-        crossorigin="anonymous"
-        style="width:80px;height:80px;display:block;">
-    </div>
-
-    <!-- UNIVERSITY DETAILS -->
-    <div style="flex:1;text-align:center;">
-
-      <div style="font-size:20pt;font-weight:bold;">
-        SARALA BIRLA UNIVERSITY
-      </div>
-
-      <div style="font-size:10pt;margin-top:4px;">
-        Birla Knowledge City, Mahilong, Ranchi
-      </div>
-
-      <div style="font-size:14pt;font-weight:bold;margin-top:12px;">
-        LEAVE APPLICATION FORM
-      </div>
-
-      <div style="font-size:10pt;margin-top:5px;">
-        SBU-HRD-05
-      </div>
-
-    </div>
-
-  </div>
-      <table style="width:100%;border-collapse:collapse;margin-bottom:8px;">
-  <tr>
-    <td style="width:25%;border:none;padding:3px 0;">Name of Applicant:</td>
-    <td style="border:none;border-bottom:1px dotted #000;width:40%;padding:3px 0;">${data.name}</td>
-    <td style="width:15%;border:none;padding:3px 0;">Mobile No:</td>
-    <td style="border:none;border-bottom:1px dotted #000;padding:3px 0;">${data.mobile}</td>
-  </tr>
-</table>
-
-<table style="width:100%;border-collapse:collapse;margin-bottom:8px;">
-  <tr>
-    <td style="width:25%;border:none;padding:3px 0;">Designation:</td>
-    <td style="border:none;border-bottom:1px dotted #000;width:40%;padding:3px 0;">${data.designation}</td>
-    <td style="width:15%;border:none;padding:3px 0;">Dept.:</td>
-    <td style="border:none;border-bottom:1px dotted #000;padding:3px 0;">${data.dept}</td>
-  </tr>
-</table>
-
-<table style="width:100%;border-collapse:collapse;margin-bottom:8px;">
-  <tr>
-    <td style="width:25%;border:none;padding:3px 0;">Address during Leave:</td>
-    <td style="border:none;border-bottom:1px dotted #000;width:50%;padding:3px 0;">${data.address}</td>
-    <td style="width:15%;border:none;padding:3px 0;">No. of Days:</td>
-    <td style="border:none;border-bottom:1px dotted #000;padding:3px 0;">${data.days}</td>
-  </tr>
-</table>
-
-<table style="width:100%;border-collapse:collapse;margin-bottom:8px;">
-  <tr>
-    <td style="width:25%;border:none;padding:3px 0;">Period of Leave From:</td>
-    <td style="border:none;border-bottom:1px dotted #000;width:30%;padding:3px 0;">${data.from}</td>
-    <td style="width:10%;border:none;padding:3px 0;">To:</td>
-    <td style="border:none;border-bottom:1px dotted #000;padding:3px 0;">${data.to}</td>
-  </tr>
-</table>
-
-<table style="width:100%;border-collapse:collapse;margin-bottom:8px;">
-  <tr>
-    <td style="width:25%;border:none;padding:3px 0;">To Join On:</td>
-    <td style="border:none;border-bottom:1px dotted #000;padding:3px 0;">${data.joinOn}</td>
-  </tr>
-</table>
-
-<table style="width:100%;border-collapse:collapse;margin-bottom:8px;">
-  <tr>
-    <td style="width:25%;border:none;padding:3px 0;">Purpose of Leave:</td>
-    <td style="border:none;border-bottom:1px dotted #000;padding:3px 0;">${data.purpose}</td>
-  </tr>
-</table>
-
-<table style="width:100%;border-collapse:collapse;margin-bottom:8px;">
-  <tr>
-    <td style="width:45%;border:none;padding:3px 0;">Type of Leave (CL / Medical / Privilege):</td>
-    <td style="border:none;border-bottom:1px dotted #000;padding:3px 0;">${data.type}</td>
-  </tr>
-</table>
-
-<table style="width:100%;border-collapse:collapse;margin-bottom:15px;">
-  <tr>
-    <td style="width:25%;border:none;padding:3px 0;">Leave at Credit:</td>
-
-    <td style="border:none;padding:3px 0;">PL</td>
-    <td style="border:none;border-bottom:1px dotted #000;width:12%;padding:3px 0;">${data.pl}</td>
-
-    <td style="border:none;padding:3px 0;">CL</td>
-    <td style="border:none;border-bottom:1px dotted #000;width:12%;padding:3px 0;">${data.cl}</td>
-
-    <td style="border:none;padding:3px 0;">SL</td>
-    <td style="border:none;border-bottom:1px dotted #000;width:12%;padding:3px 0;">${data.sl}</td>
-  </tr>
-</table>
+function createLeavePDF(data, classes, isPreview = false) {
+  const template = document.getElementById("leaveFormTemplate");
+  template.innerHTML = `
+    <div class="leave-form-pdf" id="pdfContent" 
+         style="width:794px; background:#fff; padding:40px; font-family:'Times New Roman',serif; font-size:11pt; line-height:1.4; color:#000;">
       
-      <table style="width:100%;border-collapse:collapse;font-size:9pt;margin-top:15px;">
+      <!-- HEADER - USE TABLE NOT FLEX -->
+      <table style="width:100%; border-collapse:collapse; margin-bottom:15px;">
+        <tr>
+          <td style="width:90px; vertical-align:top; border:none;">
+            <img src="https://prakash1911cse.github.io/SBURoutine/SBU_Logo.png" 
+                 crossorigin="anonymous" 
+                 style="width:80px; height:80px; display:block;">
+          </td>
+          <td style="text-align:center; border:none; vertical-align:top;">
+            <div style="font-size:20pt; font-weight:bold;">SARALA BIRLA UNIVERSITY</div>
+            <div style="font-size:10pt; margin-top:4px;">Birla Knowledge City, Mahilong, Ranchi</div>
+            <div style="font-size:14pt; font-weight:bold; margin-top:12px;">LEAVE APPLICATION FORM</div>
+            <div style="font-size:10pt; margin-top:5px;">SBU-HRD-05</div>
+          </td>
+          <td style="width:90px; border:none;"></td>
+        </tr>
+      </table>
+
+      <!-- FORM FIELDS -->
+      <table style="width:100%; border-collapse:collapse; margin-bottom:8px;">
+        <tr>
+          <td style="width:25%; border:none; padding:3px 0;">Name of Applicant:</td>
+          <td style="border:none; border-bottom:1px dotted #000; width:40%; padding:3px 0;">${data.name || ''}</td>
+          <td style="width:15%; border:none; padding:3px 0;">Mobile No:</td>
+          <td style="border:none; border-bottom:1px dotted #000; padding:3px 0;">${data.mobile || ''}</td>
+        </tr>
+      </table>
+
+      <table style="width:100%; border-collapse:collapse; margin-bottom:8px;">
+        <tr>
+          <td style="width:25%; border:none; padding:3px 0;">Designation:</td>
+          <td style="border:none; border-bottom:1px dotted #000; width:40%; padding:3px 0;">${data.designation || ''}</td>
+          <td style="width:15%; border:none; padding:3px 0;">Dept.:</td>
+          <td style="border:none; border-bottom:1px dotted #000; padding:3px 0;">${data.dept || ''}</td>
+        </tr>
+      </table>
+
+      <table style="width:100%; border-collapse:collapse; margin-bottom:8px;">
+        <tr>
+          <td style="width:25%; border:none; padding:3px 0;">Address during Leave:</td>
+          <td style="border:none; border-bottom:1px dotted #000; width:50%; padding:3px 0;">${data.address || ''}</td>
+          <td style="width:15%; border:none; padding:3px 0;">No. of Days:</td>
+          <td style="border:none; border-bottom:1px dotted #000; padding:3px 0;">${data.days || ''}</td>
+        </tr>
+      </table>
+
+      <table style="width:100%; border-collapse:collapse; margin-bottom:8px;">
+        <tr>
+          <td style="width:25%; border:none; padding:3px 0;">Period of Leave From:</td>
+          <td style="border:none; border-bottom:1px dotted #000; width:30%; padding:3px 0;">${data.from || ''}</td>
+          <td style="width:10%; border:none; padding:3px 0;">To:</td>
+          <td style="border:none; border-bottom:1px dotted #000; padding:3px 0;">${data.to || ''}</td>
+        </tr>
+      </table>
+
+      <table style="width:100%; border-collapse:collapse; margin-bottom:8px;">
+        <tr>
+          <td style="width:25%; border:none; padding:3px 0;">To Join On:</td>
+          <td style="border:none; border-bottom:1px dotted #000; padding:3px 0;">${data.joinOn || ''}</td>
+        </tr>
+      </table>
+
+      <table style="width:100%; border-collapse:collapse; margin-bottom:8px;">
+        <tr>
+          <td style="width:25%; border:none; padding:3px 0;">Purpose of Leave:</td>
+          <td style="border:none; border-bottom:1px dotted #000; padding:3px 0;">${data.purpose || ''}</td>
+        </tr>
+      </table>
+
+      <table style="width:100%; border-collapse:collapse; margin-bottom:8px;">
+        <tr>
+          <td style="width:45%; border:none; padding:3px 0;">Type of Leave (CL / Medical / Privilege):</td>
+          <td style="border:none; border-bottom:1px dotted #000; padding:3px 0;">${data.type || ''}</td>
+        </tr>
+      </table>
+
+      <table style="width:100%; border-collapse:collapse; margin-bottom:15px;">
+        <tr>
+          <td style="width:25%; border:none; padding:3px 0;">Leave at Credit:</td>
+          <td style="border:none; padding:3px 0;">PL</td>
+          <td style="border:none; border-bottom:1px dotted #000; width:12%; padding:3px 0;">${data.pl || ''}</td>
+          <td style="border:none; padding:3px 0;">CL</td>
+          <td style="border:none; border-bottom:1px dotted #000; width:12%; padding:3px 0;">${data.cl || ''}</td>
+          <td style="border:none; padding:3px 0;">SL</td>
+          <td style="border:none; border-bottom:1px dotted #000; width:12%; padding:3px 0;">${data.sl || ''}</td>
+        </tr>
+      </table>
+      
+      <table style="width:100%; border-collapse:collapse; font-size:9pt; margin-top:15px;">
         <thead>
           <tr style="background:#f0f0f0;">
-            <th style="border:none solid #000;padding:5px;width:12%;">Date</th>
-            <th style="border:none solid #000;padding:5px;width:15%;">Period</th>
-            <th style="border:none solid #000;padding:5px;width:12%;">RoomNo</th>
-            <th style="border:none solid #000;padding:5px;width:15%;">Class</th>
-            <th style="border:none solid #000;padding:5px;width:23%;">Substituted By</th>
-            <th style="border:none solid #000;padding:5px;width:23%;">Mobile No</th>
+            <th style="border:1px solid #000; padding:5px; width:12%;">Date</th>
+            <th style="border:1px solid #000; padding:5px; width:15%;">Period</th>
+            <th style="border:1px solid #000; padding:5px; width:12%;">RoomNo</th>
+            <th style="border:1px solid #000; padding:5px; width:15%;">Class</th>
+            <th style="border:1px solid #000; padding:5px; width:23%;">Substituted By</th>
+            <th style="border:1px solid #000; padding:5px; width:23%;">Mobile No</th>
           </tr>
         </thead>
         <tbody>
-          ${classes.map(c=>`
+          ${classes.map(c => `
             <tr>
-              <td style="border:none solid #000;padding:5px;">${c.date}</td>
-              <td style="border:none solid #000;padding:5px;">${c.period}</td>
-              <td style="border:none solid #000;padding:5px;">${c.room}</td>
-              <td style="border:none solid #000;padding:5px;">${c.class}</td>
-              <td style="border:none solid #000;padding:5px;">${c.person}</td>
-              <td style="border:none solid #000;padding:5px;">${c.contact||''}</td>
+              <td style="border:1px solid #000; padding:5px;">${c.date || ''}</td>
+              <td style="border:1px solid #000; padding:5px;">${c.period || ''}</td>
+              <td style="border:1px solid #000; padding:5px;">${c.room || ''}</td>
+              <td style="border:1px solid #000; padding:5px;">${c.class || ''}</td>
+              <td style="border:1px solid #000; padding:5px;">${c.person || ''}</td>
+              <td style="border:1px solid #000; padding:5px;">${c.contact || ''}</td>
             </tr>
           `).join("")}
-          ${Array(Math.max(0,6-classes.length)).fill(0).map(()=>`
+          ${Array(Math.max(0, 6 - classes.length)).fill(0).map(() => `
             <tr>
-              <td style="border:none solid #000;padding:5px;height:20px;">&nbsp;</td>
-              <td style="border:none solid #000;padding:5px;"></td>
-              <td style="border:none solid #000;padding:5px;"></td>
-              <td style="border:none solid #000;padding:5px;"></td>
-              <td style="border:none solid #000;padding:5px;"></td>
-              <td style="border:none solid #000;padding:5px;"></td>
+              <td style="border:1px solid #000; padding:5px; height:20px;">&nbsp;</td>
+              <td style="border:1px solid #000; padding:5px;"></td>
+              <td style="border:1px solid #000; padding:5px;"></td>
+              <td style="border:1px solid #000; padding:5px;"></td>
+              <td style="border:1px solid #000; padding:5px;"></td>
+              <td style="border:1px solid #000; padding:5px;"></td>
             </tr>
           `).join("")}
         </tbody>
       </table>
       
-      <div style="margin-top:25px;font-weight:bold;font-size:10pt;">For Office Use Only:</div>
+      <div style="margin-top:25px; font-weight:bold; font-size:10pt;">For Office Use Only:</div>
       
-      <table style="width:100%;border:none;margin-top:12px;">
-        <tr><td style="border:none;padding:3px 0;">Mr/Ms/Mrs:</td>
-            <td style="border-bottom:1px dotted #000;width:45%;"></td>
-            <td style="border:none;padding:3px 0;">Designation:</td>
-            <td style="border-bottom:1px dotted #000;width:25%;"></td></tr>
+      <table style="width:100%; border:none; margin-top:12px;">
+        <tr>
+          <td style="border:none; padding:3px 0;">Mr/Ms/Mrs:</td>
+          <td style="border-bottom:1px dotted #000; width:45%;"></td>
+          <td style="border:none; padding:3px 0;">Designation:</td>
+          <td style="border-bottom:1px dotted #000; width:25%;"></td>
+        </tr>
       </table>
       
       <div style="margin:15px 0;">May be/ May not be sanctioned leave</div>
       
-      <div style="display:flex;justify-content:space-between;margin-top:60px;font-size:10pt;">
-        <div>HOD/In charge of the Department</div>
-        <div>Authority of University</div>
-      </div>
+      <table style="width:100%; border:none; margin-top:60px; font-size:10pt;">
+        <tr>
+          <td style="border:none; text-align:left;">HOD/In charge of the Department</td>
+          <td style="border:none; text-align:right;">Authority of University</td>
+        </tr>
+      </table>
     </div>
   `;
-  
-  html2canvas(document.getElementById("pdfContent"),{scale:2,useCORS:true}).then(canvas=>{
-    const imgData=canvas.toDataURL('image/png');
-    const pdf=new jsPDF('p','mm','a4');
-    const pdfWidth=210;
-    const pdfHeight=(canvas.height*pdfWidth)/canvas.width;
-    pdf.addImage(imgData,'PNG',0,0,pdfWidth,pdfHeight);
-    
-    if(isPreview){
-      window.open(pdf.output('bloburl'),'_blank');
-    }else{
-      pdf.save(`SBU_Leave_${data.name}_${data.from}.pdf`);
-      showToast('PDF Downloaded','success');
-    }
-  });
+
+  // Wait for image to load before capturing
+  const img = template.querySelector('img');
+  const generatePDF = () => {
+    html2canvas(document.getElementById("pdfContent"), {
+      scale: 2,
+      useCORS: true,
+      allowTaint: true,
+      logging: false,
+      width: 794, // A4 width at 96dpi
+      windowWidth: 794
+    }).then(canvas => {
+      const imgData = canvas.toDataURL('image/png');
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      const pdfWidth = 210;
+      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+      pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+      
+      if (isPreview) {
+        window.open(pdf.output('bloburl'), '_blank');
+      } else {
+        pdf.save(`SBU_Leave_${data.name}_${data.from}.pdf`);
+        showToast('PDF Downloaded', 'success');
+      }
+    });
+  };
+
+  if (img.complete) {
+    generatePDF();
+  } else {
+    img.onload = generatePDF;
+    img.onerror = generatePDF; // Generate anyway if logo fails
+  }
 }
 function saveLeaveApplication(){
   const data=getLeaveFormData();
